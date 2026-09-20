@@ -1,0 +1,8 @@
+# build artifacts (make)
+cpp/bin/
+*.o
+*.exe
+*.out
+
+# tooling internals
+cpp/.kilo/
