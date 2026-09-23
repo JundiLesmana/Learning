@@ -62,7 +62,7 @@ int main() {
     string namaPelanggan;
 
     cout << "========================================" << endl;
-    cout << "       SISTEM ANTRIAN KASIR (FIFO)      " << endl;
+    cout << "       SISTEM ANTRIAN (FIFO)      " << endl;
     cout << "========================================" << endl;
     cout << "Kapasitas Antrian: " << MAX << " pelanggan." << endl;
     cout << "Maksimal input: 10 record." << endl;
@@ -108,7 +108,7 @@ int main() {
     }
 
     cout << "\n========================================" << endl;
-    cout << "         SISTEM KASIR DITUTUP           " << endl;
+    cout << "         SISTEM DITUTUP           " << endl;
     cout << "========================================" << endl;
 
     cout << "Tekan [Enter] untuk keluar...";
