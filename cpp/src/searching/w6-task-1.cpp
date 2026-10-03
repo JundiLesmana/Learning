@@ -29,13 +29,13 @@ int main (){
 }
 
 void cari2(int data1[], int jml, int d, int *dx){
-    int k = jml - 1;                 // mulai dari indeks terbesar
-    while (k >= 0 && data1[k] != d){ // berger ke indeks terkecil
+    int k = jml - 1;                
+    while (k >= 0 && data1[k] != d){ 
         k--;
     }
     if (k >= 0){
-        *dx = k;                     // data ditemukan di indeks k
+        *dx = k;                     
     } else {
-        *dx = -1;                    // data tidak ada
+        *dx = -1;                    
     }
 }
