@@ -1,7 +1,7 @@
 #include <iostream>
 using namespace std;
-#define MAX 10
-//Deklarasi Circular Queue
+#define MAX 3
+
 class CirQueue
 {
  private:
@@ -23,7 +23,7 @@ CirQueue:: CirQueue()
  rear = -1;
  count = 0;
 }
-//Untuk mengecek queue sudah penuh atau belum
+
 int CirQueue:: isFull()
 {
  int full=0;
@@ -31,7 +31,7 @@ int CirQueue:: isFull()
  full = 1;
  return full;
 }
-//Untuk memeriksa antrian kosong atau tidak
+
 int CirQueue:: isEmpty()
 {
  int empty=0;
@@ -39,7 +39,7 @@ int CirQueue:: isEmpty()
  empty = 1;
  return empty;
 }
-//Sisipkan item ke dalam antrian melingkar
+
 void CirQueue:: insertQueue(int item)
 {
  if( isFull() )
@@ -73,56 +73,9 @@ int main()
  q.insertQueue(10);
  q.insertQueue(20);
  q.insertQueue(30);
- q.insertQueue(40);
- q.insertQueue(50);
- q.insertQueue(60);
- q.insertQueue(70);
- q.insertQueue(80);
- q.insertQueue(90);
- q.insertQueue(100);
 
  cout << endl;
  cout << "Jundi Lesmana"<< endl;
-
- if( q.deleteQueue(&item) == 0 )
- {
- cout<<"\nItem dihapus:"<< item<< endl;
- }
-
- if( q.deleteQueue(&item) == 0 )
- {
- cout<<"\nItem dihapus:"<< item<< endl;
- }
-
- if( q.deleteQueue(&item) == 0 )
- {
- cout<<"\nItem dihapus:"<< item << endl;
- }
- 
- if( q.deleteQueue(&item) == 0 )
- {
- cout<<"\nItem dihapus:"<< item<< endl;
- }
- 
- if( q.deleteQueue(&item) == 0 )
- {
- cout<<"\nItem dihapus:"<< item<< endl;
- }
-
- if( q.deleteQueue(&item) == 0 )
- {
- cout<<"\nItem dihapus:"<< item<< endl;
- }
-
- if( q.deleteQueue(&item) == 0 )
- {
- cout<<"\nItem dihapus:"<< item << endl;
- }
- 
- if( q.deleteQueue(&item) == 0 )
- {
- cout<<"\nItem dihapus:"<< item<< endl;
- }
  
  if( q.deleteQueue(&item) == 0 )
  {
@@ -130,7 +83,7 @@ int main()
  }
 
  cout<<"\n";
- q.insertQueue(100);
+ q.insertQueue(30);
  if( q.deleteQueue(&item) == 0 )
  {
  cout<<"\nItem dihapus:"<< item<< endl;

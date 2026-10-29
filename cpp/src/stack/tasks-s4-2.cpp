@@ -1,7 +1,7 @@
 #include <iostream>
 using namespace std;
 
-#define MAX 10
+#define MAX 5
 int S[MAX];
 int top = -1;
 
