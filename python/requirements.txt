@@ -1,0 +1,4 @@
+# Dependencies untuk semua script di python/src/
+numpy
+matplotlib
+statsmodels
