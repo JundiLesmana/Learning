@@ -1,11 +1,2 @@
-# build artifacts (make)
-cpp/bin/
-*.o
-*.exe
-*.out
-
-# python
-__pycache__/
-*.pyc
-.venv/
-python/output/
+system/Cargo.lock
+system/target/

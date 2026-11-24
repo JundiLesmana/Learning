@@ -1,0 +1,13 @@
+[package]
+name = "learning-notes"
+version = "0.1.0"
+edition = "2021"
+
+[[bin]]
+name = "learning-notes"
+path = "src/main.rs"
+
+[dependencies]
+axum = { version = "0.7", features = ["tokio"] }
+tokio = { version = "1", features = ["full"] }
+tower-http = { version = "0.5", features = ["fs", "cors"] }
