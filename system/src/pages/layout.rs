@@ -641,17 +641,11 @@ pub fn layout(title: &str, active: &str, base: &str, body: &str) -> String {
     }});
   }})();
 
-  // ---- Loader Animation (first visit) ----
+  // ---- Loader Animation (every page load) ----
   (function() {{
     var overlay = document.getElementById('loaderOverlay');
-    var visited = localStorage.getItem('learning-visited');
-    if (visited === 'true') {{
-      overlay.classList.add('loader-hidden');
-      return;
-    }}
     setTimeout(function() {{
       overlay.classList.add('loader-hidden');
-      localStorage.setItem('learning-visited', 'true');
     }}, 4000);
   }})();
 </script>
