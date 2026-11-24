@@ -5,11 +5,11 @@ pub async fn handler() -> Html<String> {
     let body = r#"
 <style>
   .hero {
-    min-height: calc(100vh - 96px);
+    min-height: auto;
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
-    padding: 20px 24px 0 24px;
+    padding: 16px 24px 0 24px;
     max-width: 980px;
     margin: 0 auto;
   }
@@ -30,7 +30,7 @@ pub async fn handler() -> Html<String> {
     font-size: 1.05rem;
     max-width: 540px;
     line-height: 1.75;
-    margin-bottom: 40px;
+    margin-bottom: 24px;
   }
 
   .hero-actions {
