@@ -24,6 +24,11 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         println!("Generated: {}", full_path.display());
     }
 
+    // 404 fallback untuk SPA routing di GitHub Pages subpath
+    let not_found = home::handler().await.0;
+    fs::write(out_dir.join("404.html"), not_found)?;
+    println!("Generated: 404.html");
+
     let nojekyll = out_dir.join(".nojekyll");
     fs::write(nojekyll, "")?;
     println!("Generated: .nojekyll");
