@@ -208,7 +208,7 @@ pub async fn handler() -> Html<String> {
         </li>
         <span class="sidebar-section-label">Statistika & Probabilitas</span>
         <li>
-          <a href="/Learning/SPembelajaran/">
+          <a href="/Learning/Distribusi-Normal/">
             <span class="dot"></span>
             Distribusi Normal
           </a>
@@ -259,7 +259,7 @@ pub async fn handler() -> Html<String> {
         </div>
       </a>
 
-      <a href="/Learning/SPembelajaran/" class="learn-item glass">
+      <a href="/Learning/Distribusi-Normal/" class="learn-item glass">
         <div class="learn-item-num">04 &mdash; Statistika</div>
         <h3>Distribusi Normal</h3>
         <p>Statistika dan probabilitas dengan simulasi distribusi normal pada data IoT.</p>

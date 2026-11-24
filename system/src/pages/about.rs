@@ -114,6 +114,7 @@ pub async fn handler() -> Html<String> {
     <div class="about-section-card glass">
       <h3>Latar Belakang</h3>
       <p>
+        Saya Jundulloh rizki ananda sebagai mahasiswa Universitas Pamulang dan juga bekerja sebagai IoT Engineer di FotoYu
         Saya sedang mendalami ilmu komputer dengan fokus pada pemahaman konsep fundamental.
         Website ini dibuat sebagai catatan pribadi sekaligus portofolio pembelajaran yang dapat
         diakses kapan saja.

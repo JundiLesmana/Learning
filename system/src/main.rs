@@ -11,7 +11,7 @@ async fn main() {
         .route("/Insert-Sorting", get(pages::insert_sorting::handler))
         .route("/Bubble-Sorting", get(pages::bubble_sorting::handler))
         .route("/Pointer", get(pages::pointer::handler))
-        .route("/SPembelajaran", get(pages::statistics::handler))
+        .route("/Distribusi-Normal", get(pages::statistics::handler))
         .layer(CorsLayer::permissive());
 
     let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.unwrap();

@@ -198,6 +198,57 @@ pub async fn handler() -> Html<String> {
     margin-bottom: 16px;
   }
 
+  /* Simulation controls */
+  .sim-controls {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  .ctrl-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .ctrl-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .ctrl-input {
+    padding: 8px 12px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--glass-border);
+    background: var(--bg-base);
+    color: var(--text-primary);
+    font-size: 13px;
+    font-family: inherit;
+    outline: none;
+  }
+
+  .ctrl-input:focus { border-color: var(--accent-border); }
+
+  .btn-gen {
+    width: 100%;
+    padding: 10px;
+    border-radius: var(--radius-sm);
+    background: var(--accent);
+    color: #fff;
+    font-size: 13px;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+    transition: opacity var(--transition);
+  }
+
+  .btn-gen:hover { opacity: 0.85; }
+
   @media (max-width: 680px) {
     .stat-layout { flex-direction: column; }
     .sidebar { width: 100%; }
@@ -213,7 +264,7 @@ pub async fn handler() -> Html<String> {
       <ul class="sidebar-nav">
         <span class="sidebar-section-label">Statistika & Probabilitas</span>
         <li>
-          <a href="/Learning/SPembelajaran/" class="active">
+          <a href="/Learning/Distribusi-Normal/" class="active">
             <span class="dot"></span>Distribusi Normal
           </a>
         </li>
@@ -281,79 +332,124 @@ pub async fn handler() -> Html<String> {
 
       <span class="iot-badge">IoT Sensor Data Analysis</span>
 
+      <!-- Contoh 1: Suhu -->
       <div class="example-card">
         <div class="example-title">Contoh 1: Suhu Ruangan Sensor IoT</div>
         <div class="example-desc">
-          Sejumlah sensor IoT di ruangan mencatat suhu setiap 5 menit selama
-          sehari. Data suhu cenderung berdistribusi normal di sekitar rata-rata
-          suhu ruangan.
+          Sensor IoT mencatat suhu ruangan. Atur parameter distribusi lalu
+          generate simulasi data suhu.
+        </div>
+        <div class="sim-controls">
+          <div class="ctrl-group">
+            <div class="ctrl-label">Rata-rata (°C)</div>
+            <input class="ctrl-input" id="tempMean" type="number" value="22.5" step="0.1" />
+          </div>
+          <div class="ctrl-group">
+            <div class="ctrl-label">Std Dev (°C)</div>
+            <input class="ctrl-input" id="tempStd" type="number" value="1.8" step="0.1" />
+          </div>
+          <div class="ctrl-group">
+            <div class="ctrl-label">Sampel</div>
+            <input class="ctrl-input" id="tempCount" type="number" value="144" step="1" />
+          </div>
+          <button class="btn-gen" onclick="genChart('temp')">Generate</button>
         </div>
         <div class="chart-container">
           <canvas id="chartTemp"></canvas>
         </div>
         <div class="stats-grid">
           <div class="stat-box">
-            <div class="stat-num" id="tempMean">22.5</div>
+            <div class="stat-num" id="tempMeanVal">22.5</div>
             <div class="stat-label">Rata-rata (°C)</div>
           </div>
           <div class="stat-box">
-            <div class="stat-num" id="tempStd">1.8</div>
+            <div class="stat-num" id="tempStdVal">1.8</div>
             <div class="stat-label">Std Dev (°C)</div>
           </div>
           <div class="stat-box">
-            <div class="stat-num" id="tempCount">144</div>
+            <div class="stat-num" id="tempCountVal">144</div>
             <div class="stat-label">Sampel</div>
           </div>
         </div>
       </div>
 
+      <!-- Contoh 2: Detak Jantung -->
       <div class="example-card">
         <div class="example-title">Contoh 2: Detak Jantung Pengguna Wearable</div>
         <div class="example-desc">
-          Perangkat wearable IoT memantau detak jantung pengguna secara
-          real-time. Distribusi detak jantung dalam kondisi istirahat
-          mengikuti pola normal.
+          Perangkat wearable IoT memantau detak jantung. Atur parameter dan
+          generate simulasi data detak jantung.
+        </div>
+        <div class="sim-controls">
+          <div class="ctrl-group">
+            <div class="ctrl-label">Rata-rata (bpm)</div>
+            <input class="ctrl-input" id="heartMean" type="number" value="72" step="1" />
+          </div>
+          <div class="ctrl-group">
+            <div class="ctrl-label">Std Dev (bpm)</div>
+            <input class="ctrl-input" id="heartStd" type="number" value="6" step="1" />
+          </div>
+          <div class="ctrl-group">
+            <div class="ctrl-label">Sampel</div>
+            <input class="ctrl-input" id="heartCount" type="number" value="288" step="1" />
+          </div>
+          <button class="btn-gen" onclick="genChart('heart')">Generate</button>
         </div>
         <div class="chart-container">
           <canvas id="chartHeart"></canvas>
         </div>
         <div class="stats-grid">
           <div class="stat-box">
-            <div class="stat-num" id="heartMean">72</div>
+            <div class="stat-num" id="heartMeanVal">72</div>
             <div class="stat-label">Rata-rata (bpm)</div>
           </div>
           <div class="stat-box">
-            <div class="stat-num" id="heartStd">6</div>
+            <div class="stat-num" id="heartStdVal">6</div>
             <div class="stat-label">Std Dev (bpm)</div>
           </div>
           <div class="stat-box">
-            <div class="stat-num" id="heartCount">288</div>
+            <div class="stat-num" id="heartCountVal">288</div>
             <div class="stat-label">Sampel</div>
           </div>
         </div>
       </div>
 
+      <!-- Contoh 3: Tegangan -->
       <div class="example-card">
         <div class="example-title">Contoh 3: Tegangan Listrik Sensor IoT</div>
         <div class="example-desc">
-          Sensor tegangan listrik di jaringan IoT mencatat tegangan stabil.
-          Fluktuasi tegangan kecil mengikuti distribusi normal sekitar nilai
-          nominal.
+          Sensor tegangan listrik mencatat fluktuasi tegangan. Atur parameter
+          dan generate simulasi data tegangan.
+        </div>
+        <div class="sim-controls">
+          <div class="ctrl-group">
+            <div class="ctrl-label">Rata-rata (V)</div>
+            <input class="ctrl-input" id="voltMean" type="number" value="5.0" step="0.1" />
+          </div>
+          <div class="ctrl-group">
+            <div class="ctrl-label">Std Dev (V)</div>
+            <input class="ctrl-input" id="voltStd" type="number" value="0.15" step="0.01" />
+          </div>
+          <div class="ctrl-group">
+            <div class="ctrl-label">Sampel</div>
+            <input class="ctrl-input" id="voltCount" type="number" value="500" step="1" />
+          </div>
+          <button class="btn-gen" onclick="genChart('volt')">Generate</button>
         </div>
         <div class="chart-container">
           <canvas id="chartVoltage"></canvas>
         </div>
         <div class="stats-grid">
           <div class="stat-box">
-            <div class="stat-num" id="voltMean">5.0</div>
+            <div class="stat-num" id="voltMeanVal">5.0</div>
             <div class="stat-label">Rata-rata (V)</div>
           </div>
           <div class="stat-box">
-            <div class="stat-num" id="voltStd">0.15</div>
+            <div class="stat-num" id="voltStdVal">0.15</div>
             <div class="stat-label">Std Dev (V)</div>
           </div>
           <div class="stat-box">
-            <div class="stat-num" id="voltCount">500</div>
+            <div class="stat-num" id="voltCountVal">500</div>
             <div class="stat-label">Sampel</div>
           </div>
         </div>
@@ -416,10 +512,11 @@ pub async fn handler() -> Html<String> {
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script>
+var charts = {};
+
 function generateNormalData(mean, std, count) {
   var data = [];
   for (var i = 0; i < count; i++) {
-    // Box-Muller transform for normal distribution
     var u1 = Math.random();
     var u2 = Math.random();
     var z = Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2);
@@ -444,77 +541,23 @@ function createHistogram(data, bins, rangeMin, rangeMax) {
   return { labels: labels, data: histogram };
 }
 
-function initCharts() {
-  // Chart 1: Temperature
-  var tempData = generateNormalData(22.5, 1.8, 144);
-  var tempHist = createHistogram(tempData, 20, 16, 29);
-  new Chart(document.getElementById('chartTemp'), {
-    type: 'bar',
-    data: {
-      labels: tempHist.labels,
-      datasets: [{
-        label: 'Suhu Ruangan (°C)',
-        data: tempHist.data,
-        backgroundColor: 'rgba(108, 142, 255, 0.7)',
-        borderColor: 'rgba(108, 142, 255, 1)',
-        borderWidth: 1
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: { display: false },
-        title: { display: false }
-      },
-      scales: {
-        y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.05)' } },
-        x: { grid: { display: false } }
-      }
-    }
-  });
+function updateChart(chartId, canvasId, mean, std, count, rangeMin, rangeMax, color, label) {
+  var data = generateNormalData(mean, std, count);
+  var hist = createHistogram(data, 20, rangeMin, rangeMax);
 
-  // Chart 2: Heart Rate
-  var heartData = generateNormalData(72, 6, 288);
-  var heartHist = createHistogram(heartData, 20, 50, 95);
-  new Chart(document.getElementById('chartHeart'), {
-    type: 'bar',
-    data: {
-      labels: heartHist.labels,
-      datasets: [{
-        label: 'Detak Jantung (bpm)',
-        data: heartHist.data,
-        backgroundColor: 'rgba(255, 107, 107, 0.7)',
-        borderColor: 'rgba(255, 107, 107, 1)',
-        borderWidth: 1
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: { display: false },
-        title: { display: false }
-      },
-      scales: {
-        y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.05)' } },
-        x: { grid: { display: false } }
-      }
-    }
-  });
+  if (charts[chartId]) {
+    charts[chartId].destroy();
+  }
 
-  // Chart 3: Voltage
-  var voltData = generateNormalData(5.0, 0.15, 500);
-  var voltHist = createHistogram(voltData, 20, 4.4, 5.6);
-  new Chart(document.getElementById('chartVoltage'), {
+  charts[chartId] = new Chart(document.getElementById(canvasId), {
     type: 'bar',
     data: {
-      labels: voltHist.labels,
+      labels: hist.labels,
       datasets: [{
-        label: 'Tegangan (V)',
-        data: voltHist.data,
-        backgroundColor: 'rgba(168, 230, 207, 0.7)',
-        borderColor: 'rgba(168, 230, 207, 1)',
+        label: label,
+        data: hist.data,
+        backgroundColor: color.bg,
+        borderColor: color.border,
         borderWidth: 1
       }]
     },
@@ -533,8 +576,44 @@ function initCharts() {
   });
 }
 
+function genChart(type) {
+  if (type === 'temp') {
+    var mean = parseFloat(document.getElementById('tempMean').value) || 22.5;
+    var std = parseFloat(document.getElementById('tempStd').value) || 1.8;
+    var count = parseInt(document.getElementById('tempCount').value) || 144;
+    document.getElementById('tempMeanVal').textContent = mean;
+    document.getElementById('tempStdVal').textContent = std;
+    document.getElementById('tempCountVal').textContent = count;
+    updateChart('temp', 'chartTemp', mean, std, count, 16, 29,
+      { bg: 'rgba(108, 142, 255, 0.7)', border: 'rgba(108, 142, 255, 1)' },
+      'Suhu Ruangan (°C)');
+  } else if (type === 'heart') {
+    var mean = parseFloat(document.getElementById('heartMean').value) || 72;
+    var std = parseFloat(document.getElementById('heartStd').value) || 6;
+    var count = parseInt(document.getElementById('heartCount').value) || 288;
+    document.getElementById('heartMeanVal').textContent = mean;
+    document.getElementById('heartStdVal').textContent = std;
+    document.getElementById('heartCountVal').textContent = count;
+    updateChart('heart', 'chartHeart', mean, std, count, 50, 95,
+      { bg: 'rgba(255, 107, 107, 0.7)', border: 'rgba(255, 107, 107, 1)' },
+      'Detak Jantung (bpm)');
+  } else if (type === 'volt') {
+    var mean = parseFloat(document.getElementById('voltMean').value) || 5.0;
+    var std = parseFloat(document.getElementById('voltStd').value) || 0.15;
+    var count = parseInt(document.getElementById('voltCount').value) || 500;
+    document.getElementById('voltMeanVal').textContent = mean;
+    document.getElementById('voltStdVal').textContent = std;
+    document.getElementById('voltCountVal').textContent = count;
+    updateChart('volt', 'chartVoltage', mean, std, count, 4.4, 5.6,
+      { bg: 'rgba(168, 230, 207, 0.7)', border: 'rgba(168, 230, 207, 1)' },
+      'Tegangan (V)');
+  }
+}
+
 window.addEventListener('DOMContentLoaded', function() {
-  initCharts();
+  genChart('temp');
+  genChart('heart');
+  genChart('volt');
 });
 </script>
 "#;

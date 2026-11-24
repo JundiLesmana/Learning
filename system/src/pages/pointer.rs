@@ -346,6 +346,12 @@ pub async fn handler() -> Html<String> {
             <span class="dot"></span>Pointer Simulation
           </a>
         </li>
+        <span class="sidebar-section-label">Statistika & Probabilitas</span>
+        <li>
+          <a href="/Learning/Distribusi-Normal/">
+            <span class="dot"></span>Distribusi Normal
+          </a>
+        </li>
         <li>
           <a href="/Learning/Insert-Sorting/">
             <span class="dot"></span>Insertion Sort

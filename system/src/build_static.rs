@@ -14,7 +14,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         ("Insert-Sorting/index.html", insert_sorting::handler().await.0),
         ("Bubble-Sorting/index.html", bubble_sorting::handler().await.0),
         ("Pointer/index.html", pointer::handler().await.0),
-        ("SPembelajaran/index.html", statistics::handler().await.0),
+        ("Distribusi-Normal/index.html", statistics::handler().await.0),
     ];
 
     for (path, html) in routes {
