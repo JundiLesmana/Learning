@@ -7,6 +7,10 @@ edition = "2021"
 name = "learning-notes"
 path = "src/main.rs"
 
+[[bin]]
+name = "build-static"
+path = "src/build_static.rs"
+
 [dependencies]
 axum = { version = "0.7", features = ["tokio"] }
 tokio = { version = "1", features = ["full"] }

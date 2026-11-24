@@ -1,7 +1,6 @@
 use axum::{routing::get, Router};
 use tower_http::cors::CorsLayer;
-
-mod pages;
+use learning_notes::pages;
 
 #[tokio::main]
 async fn main() {
