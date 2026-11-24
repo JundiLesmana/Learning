@@ -335,6 +335,18 @@ pub async fn handler() -> Html<String> {
             <span class="dot"></span>Bubble Sort
           </a>
         </li>
+        <span class="sidebar-section-label">Pointer & Memori</span>
+        <li>
+          <a href="/Learning/Pointer/">
+            <span class="dot"></span>Pointer Simulation
+          </a>
+        </li>
+        <span class="sidebar-section-label">Statistika & Probabilitas</span>
+        <li>
+          <a href="/Learning/Distribusi-Normal/">
+            <span class="dot"></span>Distribusi Normal
+          </a>
+        </li>
       </ul>
     </div>
   </aside>
