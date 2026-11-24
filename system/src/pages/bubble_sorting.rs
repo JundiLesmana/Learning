@@ -87,12 +87,12 @@ pub async fn handler() -> Html<String> {
       <ul class="sidebar-nav">
         <span class="sidebar-section-label">Algoritma Sorting</span>
         <li>
-          <a href="/Insert-Sorting">
+          <a href="../Insert-Sorting/">
             <span class="dot"></span>Insertion Sort
           </a>
         </li>
         <li>
-          <a href="/Bubble-Sorting" class="active">
+          <a href="./" class="active">
             <span class="dot"></span>Bubble Sort
           </a>
         </li>

@@ -296,11 +296,11 @@ pub fn layout(title: &str, active: &str, body: &str) -> String {
 
 <!-- NAVBAR -->
 <nav class="navbar" role="navigation" aria-label="Main navigation">
-  <a class="navbar-brand" href="/">Learning<span>.</span></a>
+  <a class="navbar-brand" href="./">Learning<span>.</span></a>
   <ul class="navbar-nav">
-    <li><a href="/" class="{nav_home}">Beranda</a></li>
-    <li><a href="/about" class="{nav_about}">About</a></li>
-    <li><a href="/mylearn" class="{nav_mylearn}">MyLearn</a></li>
+    <li><a href="./" class="{nav_home}">Beranda</a></li>
+    <li><a href="./about/" class="{nav_about}">About</a></li>
+    <li><a href="./mylearn/" class="{nav_mylearn}">MyLearn</a></li>
   </ul>
   <button class="btn-theme" onclick="toggleTheme()" id="themeBtn" aria-label="Toggle theme">
     <svg id="iconSun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">

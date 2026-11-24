@@ -188,13 +188,13 @@ pub async fn handler() -> Html<String> {
       <ul class="sidebar-nav">
         <span class="sidebar-section-label">Algoritma Sorting</span>
         <li>
-          <a href="/Insert-Sorting">
+          <a href="../Insert-Sorting/">
             <span class="dot"></span>
             Insertion Sort
           </a>
         </li>
         <li>
-          <a href="/Bubble-Sorting">
+          <a href="../Bubble-Sorting/">
             <span class="dot"></span>
             Bubble Sort
           </a>
@@ -215,7 +215,7 @@ pub async fn handler() -> Html<String> {
     </div>
 
     <div class="learn-grid">
-      <a href="/Insert-Sorting" class="learn-item glass">
+      <a href="../Insert-Sorting/" class="learn-item glass">
         <div class="learn-item-num">01 &mdash; Sorting</div>
         <h3>Insertion Sort</h3>
         <p>Algoritma pengurutan yang membangun array terurut satu elemen per iterasi dengan cara menyisipkan elemen pada posisi yang tepat.</p>
@@ -225,7 +225,7 @@ pub async fn handler() -> Html<String> {
         </div>
       </a>
 
-      <a href="/Bubble-Sorting" class="learn-item glass">
+      <a href="../Bubble-Sorting/" class="learn-item glass">
         <div class="learn-item-num">02 &mdash; Sorting</div>
         <h3>Bubble Sort</h3>
         <p>Algoritma pengurutan yang membandingkan dan menukar elemen yang berdekatan secara berulang hingga seluruh array terurut.</p>
