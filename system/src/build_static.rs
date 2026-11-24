@@ -1,4 +1,4 @@
-use learning_notes::pages::{home, about, mylearn, insert_sorting, bubble_sorting};
+use learning_notes::pages::{home, about, mylearn, insert_sorting, bubble_sorting, pointer, statistics};
 use std::fs;
 use std::path::Path;
 
@@ -13,6 +13,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         ("mylearn/index.html", mylearn::handler().await.0),
         ("Insert-Sorting/index.html", insert_sorting::handler().await.0),
         ("Bubble-Sorting/index.html", bubble_sorting::handler().await.0),
+        ("Pointer/index.html", pointer::handler().await.0),
+        ("SPembelajaran/index.html", statistics::handler().await.0),
     ];
 
     for (path, html) in routes {

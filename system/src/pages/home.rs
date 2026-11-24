@@ -8,8 +8,8 @@ pub async fn handler() -> Html<String> {
     min-height: calc(100vh - 96px);
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    padding: 0 24px;
+    justify-content: flex-start;
+    padding: 20px 24px 0 24px;
     max-width: 980px;
     margin: 0 auto;
   }

@@ -312,9 +312,9 @@ pub fn layout(title: &str, active: &str, base: &str, body: &str) -> String {
 
     /* 3D Book Character */
     .book-stage {{
-      perspective: 800px;
-      width: 200px;
-      height: 280px;
+      perspective: 1000px;
+      width: 260px;
+      height: 320px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -323,21 +323,21 @@ pub fn layout(title: &str, active: &str, base: &str, body: &str) -> String {
 
     @keyframes float {{
       0%, 100% {{ transform: translateY(0); }}
-      50% {{ transform: translateY(-20px); }}
+      50% {{ transform: translateY(-15px); }}
     }}
 
     .book-character {{
       position: relative;
-      width: 120px;
-      height: 180px;
+      width: 140px;
+      height: 200px;
       transform-style: preserve-3d;
       animation: bounce 3s ease-in-out infinite;
     }}
 
     @keyframes bounce {{
       0%, 100% {{ transform: rotateX(0) rotateY(0); }}
-      25% {{ transform: rotateX(5deg) rotateY(5deg); }}
-      75% {{ transform: rotateX(-5deg) rotateY(-5deg); }}
+      25% {{ transform: rotateX(4deg) rotateY(4deg); }}
+      75% {{ transform: rotateX(-4deg) rotateY(-4deg); }}
     }}
 
     .book-part {{
@@ -345,19 +345,48 @@ pub fn layout(title: &str, active: &str, base: &str, body: &str) -> String {
       transform-style: preserve-3d;
     }}
 
+    /* Flying book on the LEFT side (replacing blue line glitch) */
+    .flying-book {{
+      position: absolute;
+      left: -90px;
+      top: 20px;
+      width: 70px;
+      height: 100px;
+      transform-style: preserve-3d;
+      animation: flyBook 5s ease-in-out infinite;
+    }}
+
+    @keyframes flyBook {{
+      0%, 100% {{ transform: translateX(0) translateY(0) rotateZ(0); }}
+      25% {{ transform: translateX(-10px) translateY(-15px) rotateZ(-8deg); }}
+      50% {{ transform: translateX(0) translateY(0) rotateZ(0); }}
+      75% {{ transform: translateX(10px) translateY(-10px) rotateZ(8deg); }}
+    }}
+
     .book-cover {{
-      width: 120px;
-      height: 180px;
+      width: 140px;
+      height: 200px;
       background: linear-gradient(135deg, #6c8eff 0%, #3a6bdf 100%);
       border-radius: 6px;
       box-shadow: 0 10px 30px rgba(0,0,0,0.3);
       border: 2px solid rgba(255,255,255,0.2);
-      transform: rotateY(0deg) translateZ(6px);
+      transform: rotateY(0deg) translateZ(7px);
+    }}
+
+    /* Flying book cover */
+    .flying-cover {{
+      width: 70px;
+      height: 100px;
+      background: linear-gradient(135deg, #6c8eff 0%, #3a6bdf 100%);
+      border-radius: 4px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+      border: 1px solid rgba(255,255,255,0.2);
+      transform: rotateY(0deg) translateZ(3px);
     }}
 
     .book-pages {{
-      width: 14px;
-      height: 180px;
+      width: 16px;
+      height: 200px;
       background: repeating-linear-gradient(
         #fff 0,
         #fff 2px,
@@ -365,42 +394,83 @@ pub fn layout(title: &str, active: &str, base: &str, body: &str) -> String {
         #f0f0f4 4px
       );
       border-radius: 0 3px 3px 0;
-      transform: rotateY(90deg) translateZ(53px);
+      transform: rotateY(90deg) translateZ(63px);
       box-shadow: -4px 0 15px rgba(0,0,0,0.2);
     }}
 
+    /* Flying book pages */
+    .flying-pages {{
+      width: 10px;
+      height: 100px;
+      background: repeating-linear-gradient(
+        #fff 0,
+        #fff 2px,
+        #f0f0f4 2px,
+        #f0f0f4 4px
+      );
+      border-radius: 0 2px 2px 0;
+      transform: rotateY(90deg) translateZ(35px);
+      box-shadow: -2px 0 8px rgba(0,0,0,0.2);
+    }}
+
     .book-spine {{
-      width: 12px;
-      height: 180px;
+      width: 14px;
+      height: 200px;
       background: linear-gradient(135deg, #4a6bcf 0%, #2a4daf 100%);
       border-radius: 3px 0 0 3px;
-      transform: rotateY(90deg) translateZ(-53px);
+      transform: rotateY(90deg) translateZ(-63px);
+    }}
+
+    /* Flying book spine */
+    .flying-spine {{
+      width: 8px;
+      height: 100px;
+      background: linear-gradient(135deg, #4a6bcf 0%, #2a4daf 100%);
+      border-radius: 2px 0 0 2px;
+      transform: rotateY(90deg) translateZ(-35px);
     }}
 
     .book-top {{
-      width: 120px;
-      height: 14px;
+      width: 140px;
+      height: 16px;
       background: linear-gradient(135deg, #8aa4ff 0%, #5a7df0 100%);
-      transform: rotateX(90deg) translateZ(67px);
+      transform: rotateX(90deg) translateZ(93px);
       border-radius: 6px 6px 0 0;
     }}
 
     .book-bottom {{
-      width: 120px;
-      height: 14px;
+      width: 140px;
+      height: 16px;
       background: linear-gradient(135deg, #4a6bcf 0%, #2a4daf 100%);
       transform: rotateX(-90deg) translateZ(107px);
       border-radius: 0 0 6px 6px;
     }}
 
+    /* Flying book top/bottom */
+    .flying-top {{
+      width: 70px;
+      height: 10px;
+      background: linear-gradient(135deg, #8aa4ff 0%, #5a7df0 100%);
+      transform: rotateX(90deg) translateZ(48px);
+      border-radius: 4px 4px 0 0;
+    }}
+
+    .flying-bottom {{
+      width: 70px;
+      height: 10px;
+      background: linear-gradient(135deg, #4a6bcf 0%, #2a4daf 100%);
+      transform: rotateX(-90deg) translateZ(52px);
+      border-radius: 0 0 4px 4px;
+    }}
+
     /* Face */
     .book-face {{
       position: absolute;
-      top: 45px;
-      left: 20px;
+      top: 75px;
+      left: 30px;
       width: 80px;
-      height: 60px;
-      transform: translateZ(12px);
+      height: 50px;
+      transform: translateZ(14px);
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -445,13 +515,13 @@ pub fn layout(title: &str, active: &str, base: &str, body: &str) -> String {
     /* Graduation Cap */
     .grad-cap {{
       position: absolute;
-      top: -28px;
-      left: 28px;
+      top: -32px;
+      left: 38px;
       width: 64px;
       height: 20px;
       background: #1a1a2e;
       border-radius: 4px 4px 0 0;
-      transform: translateZ(20px);
+      transform: translateZ(22px);
     }}
 
     .grad-cap-top {{
@@ -470,13 +540,13 @@ pub fn layout(title: &str, active: &str, base: &str, body: &str) -> String {
       width: 4px;
       height: 30px;
       background: #ffd700;
-      transform: translateZ(20px);
+      transform: translateZ(22px);
       animation: swing 2s ease-in-out infinite;
     }}
 
     @keyframes swing {{
-      0%, 100% {{ transform: translateZ(20px) rotate(0deg); }}
-      50% {{ transform: translateZ(20px) rotate(15deg); }}
+      0%, 100% {{ transform: translateZ(22px) rotate(0deg); }}
+      50% {{ transform: translateZ(22px) rotate(15deg); }}
     }}
 
     /* Limbs */
@@ -486,19 +556,19 @@ pub fn layout(title: &str, active: &str, base: &str, body: &str) -> String {
       height: 35px;
       background: linear-gradient(135deg, #6c8eff 0%, #3a6bdf 100%);
       border-radius: 4px;
-      transform: translateZ(10px);
+      transform: translateZ(12px);
     }}
 
     .arm-left {{
-      top: 70px;
+      top: 90px;
       left: -8px;
-      transform: rotate(-30deg) translateZ(10px);
+      transform: rotate(-30deg) translateZ(12px);
     }}
 
     .arm-right {{
-      top: 70px;
+      top: 90px;
       right: -8px;
-      transform: rotate(30deg) translateZ(10px);
+      transform: rotate(30deg) translateZ(12px);
     }}
 
     .leg {{
@@ -508,17 +578,17 @@ pub fn layout(title: &str, active: &str, base: &str, body: &str) -> String {
       background: linear-gradient(135deg, #4a6bcf 0%, #2a4daf 100%);
       border-radius: 4px;
       bottom: -30px;
-      transform: translateZ(10px);
+      transform: translateZ(12px);
     }}
 
     .leg-left {{
-      left: 25px;
-      transform: rotate(-15deg) translateZ(10px);
+      left: 30px;
+      transform: rotate(-15deg) translateZ(12px);
     }}
 
     .leg-right {{
-      right: 25px;
-      transform: rotate(15deg) translateZ(10px);
+      right: 30px;
+      transform: rotate(15deg) translateZ(12px);
     }}
 
     .loader-text {{
@@ -539,9 +609,16 @@ pub fn layout(title: &str, active: &str, base: &str, body: &str) -> String {
 </head>
 <body>
 
-<!-- Loader Overlay (first visit only) -->
+<!-- Loader Overlay -->
 <div class="loader-overlay" id="loaderOverlay">
   <div class="book-stage">
+    <div class="flying-book">
+      <div class="book-part flying-cover"></div>
+      <div class="book-part flying-pages"></div>
+      <div class="book-part flying-spine"></div>
+      <div class="book-part flying-top"></div>
+      <div class="book-part flying-bottom"></div>
+    </div>
     <div class="book-character">
       <div class="book-part book-cover"></div>
       <div class="book-part book-pages"></div>
@@ -646,7 +723,7 @@ pub fn layout(title: &str, active: &str, base: &str, body: &str) -> String {
     var overlay = document.getElementById('loaderOverlay');
     setTimeout(function() {{
       overlay.classList.add('loader-hidden');
-    }}, 4000);
+    }}, 2000);
   }})();
 </script>
 </body>

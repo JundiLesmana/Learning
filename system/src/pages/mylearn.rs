@@ -199,6 +199,20 @@ pub async fn handler() -> Html<String> {
             Bubble Sort
           </a>
         </li>
+        <span class="sidebar-section-label">Pointer & Memori</span>
+        <li>
+          <a href="/Learning/Pointer/">
+            <span class="dot"></span>
+            Pointer Simulation
+          </a>
+        </li>
+        <span class="sidebar-section-label">Statistika & Probabilitas</span>
+        <li>
+          <a href="/Learning/SPembelajaran/">
+            <span class="dot"></span>
+            Distribusi Normal
+          </a>
+        </li>
       </ul>
     </div>
   </aside>
@@ -232,6 +246,26 @@ pub async fn handler() -> Html<String> {
         <div class="learn-item-meta">
           <span class="meta-badge">Interaktif</span>
           <span class="meta-time">Simulasi tersedia</span>
+        </div>
+      </a>
+
+      <a href="/Learning/Pointer/" class="learn-item glass">
+        <div class="learn-item-num">03 &mdash; Pointer</div>
+        <h3>Pointer Simulation</h3>
+        <p>Simulasi visualisasi pointer dan alamat memori, lengkap dengan string character counter.</p>
+        <div class="learn-item-meta">
+          <span class="meta-badge">Interaktif</span>
+          <span class="meta-time">Simulasi tersedia</span>
+        </div>
+      </a>
+
+      <a href="/Learning/SPembelajaran/" class="learn-item glass">
+        <div class="learn-item-num">04 &mdash; Statistika</div>
+        <h3>Distribusi Normal</h3>
+        <p>Statistika dan probabilitas dengan simulasi distribusi normal pada data IoT.</p>
+        <div class="learn-item-meta">
+          <span class="meta-badge">Interaktif</span>
+          <span class="meta-time">Grafik tersedia</span>
         </div>
       </a>
     </div>
