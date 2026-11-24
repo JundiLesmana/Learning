@@ -672,7 +672,7 @@ pub fn layout(title: &str, active: &str, base: &str, body: &str) -> String {
   {body}
   <footer>
     <div class="container">
-      Learning Notes &mdash; {year}
+      Learning Notes Jundulloh R.A &mdash; {year}
     </div>
   </footer>
 </div>

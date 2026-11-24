@@ -176,7 +176,6 @@ pub async fn handler() -> Html<String> {
 </style>
 
 <section class="hero">
-  <div class="hero-label"><span class="label">Catatan Belajar</span></div>
   <h1 class="hero-title">Dokumentasi Proses<br><span>Pembelajaran</span> Saya</h1>
   <p class="hero-desc">
     Ruang dokumentasi perjalanan belajar — algoritma, struktur data, dan konsep
@@ -191,7 +190,6 @@ pub async fn handler() -> Html<String> {
   <div class="container">
     <div class="section-title-row">
       <div>
-        <span class="label" style="margin-bottom:12px;display:inline-flex;">Materi Terbaru</span>
         <h2 style="margin-top:12px;">Topik Pembelajaran</h2>
       </div>
       <a href="/Learning/mylearn/" class="btn-secondary" style="font-size:12.5px;padding:8px 18px;">Lihat Semua</a>

@@ -366,14 +366,17 @@ pub async fn handler() -> Html<String> {
             <div class="stat-num" id="tempStdVal">1.8</div>
             <div class="stat-label">Std Dev (°C)</div>
           </div>
-          <div class="stat-box">
+        <div class="stat-box">
             <div class="stat-num" id="tempCountVal">144</div>
             <div class="stat-label">Sampel</div>
           </div>
         </div>
+        <div class="explanation-card" style="margin-top:16px;padding:16px;background:var(--glass-bg);border-radius:var(--radius-lg);border:1px solid var(--glass-border);">
+          <div style="font-size:11px;font-weight:700;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:8px;">Kesimpulan Analisis</div>
+          <div id="tempExplanation" style="font-size:13px;color:var(--text-secondary);line-height:1.7;"></div>
+        </div>
       </div>
 
-      <!-- Contoh 2: Detak Jantung -->
       <div class="example-card">
         <div class="example-title">Contoh 2: Detak Jantung Pengguna Wearable</div>
         <div class="example-desc">
@@ -407,14 +410,17 @@ pub async fn handler() -> Html<String> {
             <div class="stat-num" id="heartStdVal">6</div>
             <div class="stat-label">Std Dev (bpm)</div>
           </div>
-          <div class="stat-box">
+        <div class="stat-box">
             <div class="stat-num" id="heartCountVal">288</div>
             <div class="stat-label">Sampel</div>
           </div>
         </div>
+        <div class="explanation-card" style="margin-top:16px;padding:16px;background:var(--glass-bg);border-radius:var(--radius-lg);border:1px solid var(--glass-border);">
+          <div style="font-size:11px;font-weight:700;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:8px;">Kesimpulan Analisis</div>
+          <div id="heartExplanation" style="font-size:13px;color:var(--text-secondary);line-height:1.7;"></div>
+        </div>
       </div>
 
-      <!-- Contoh 3: Tegangan -->
       <div class="example-card">
         <div class="example-title">Contoh 3: Tegangan Listrik Sensor IoT</div>
         <div class="example-desc">
@@ -452,6 +458,10 @@ pub async fn handler() -> Html<String> {
             <div class="stat-num" id="voltCountVal">500</div>
             <div class="stat-label">Sampel</div>
           </div>
+        </div>
+        <div class="explanation-card" style="margin-top:16px;padding:16px;background:var(--glass-bg);border-radius:var(--radius-lg);border:1px solid var(--glass-border);">
+          <div style="font-size:11px;font-weight:700;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:8px;">Kesimpulan Analisis</div>
+          <div id="voltExplanation" style="font-size:13px;color:var(--text-secondary);line-height:1.7;"></div>
         </div>
       </div>
     </div>
@@ -576,6 +586,85 @@ function updateChart(chartId, canvasId, mean, std, count, rangeMin, rangeMax, co
   });
 }
 
+function computeStats(data, mean, std) {
+  var sorted = data.slice().sort(function(a, b){ return a - b; });
+  var min = sorted[0].toFixed(2);
+  var max = sorted[sorted.length - 1].toFixed(2);
+  var within1 = data.filter(function(v){ return v >= mean - std && v <= mean + std; }).length;
+  var within2 = data.filter(function(v){ return v >= mean - 2*std && v <= mean + 2*std; }).length;
+  var within3 = data.filter(function(v){ return v >= mean - 3*std && v <= mean + 3*std; }).length;
+  var pct1 = ((within1 / data.length) * 100).toFixed(1);
+  var pct2 = ((within2 / data.length) * 100).toFixed(1);
+  var pct3 = ((within3 / data.length) * 100).toFixed(1);
+  return { min: min, max: max, pct1: pct1, pct2: pct2, pct3: pct3 };
+}
+
+function explainTemp(mean, std, count, stats) {
+  var lines = [];
+  lines.push('Berdasarkan ' + count + ' sampel data suhu, rata-rata suhu tercatat ' + mean.toFixed(1) + '°C dengan simpangan baku ' + std.toFixed(1) + '°C.');
+  lines.push('Suara data berada di antara ' + stats.min + '°C hingga ' + stats.max + '°C.');
+  lines.push('Sebesar ' + stats.pct1 + '% data berada dalam rentang 1σ (' + (mean - std).toFixed(1) + '–' + (mean + std).toFixed(1) + '°C), ' + stats.pct2 + '% dalam 2σ, dan ' + stats.pct3 + '% dalam 3σ.');
+
+  if (mean < 18) {
+    lines.push('<strong>Kesimpulan:</strong> Suhu terlalu dingin (di bawah 18°C). Disarankan menyalakan pemanas atau memeriksa pendingin ruangan.');
+  } else if (mean > 26) {
+    lines.push('<strong>Kesimpulan:</strong> Suhu terlalu panas (di atas 26°C). Disarankan menyalakan AC atau pendingin untuk menjaga nyamanan.');
+  } else {
+    lines.push('<strong>Kesimpulan:</strong> Suhu ruangan dalam kondisi nyaman (18–26°C), cocok untuk aktivitas indoor.');
+  }
+
+  if (std > 2) {
+    lines.push('Fluktuasi suhu cukup besar (' + std.toFixed(1) + '°C), sensor IoT mungkin berada di lokasi dengan variasi suhu tinggi.');
+  } else {
+    lines.push('Suhu relatif stabil dengan fluktuasi kecil (' + std.toFixed(1) + '°C).');
+  }
+  return lines.join(' ');
+}
+
+function explainHeart(mean, std, count, stats) {
+  var lines = [];
+  lines.push('Berdasarkan ' + count + ' sampel detak jantung, rata-rata detak ' + mean.toFixed(0) + ' bpm dengan simpangan baku ' + std.toFixed(1) + ' bpm.');
+  lines.push('Detak jantung berkisar antara ' + stats.min + ' hingga ' + stats.max + ' bpm.');
+  lines.push('Sebesar ' + stats.pct1 + '% data dalam rentang 1σ, ' + stats.pct2 + '% dalam 2σ, dan ' + stats.pct3 + '% dalam 3σ.');
+
+  if (mean < 60) {
+    lines.push('<strong>Kesimpulan:</strong> Detak jantung rendah (bradycardia, di bawah 60 bpm). Perlu pemantauan medis jika berlangsung.');
+  } else if (mean > 100) {
+    lines.push('<strong>Kesimpulan:</strong> Detak jantung tinggi (tachycardia, di atas 100 bpm). Perhatikan aktivitas fisik atau stres.');
+  } else {
+    lines.push('<strong>Kesimpulan:</strong> Detak jantung dalam rentang normal istirahat (60–100 bpm).');
+  }
+
+  if (std > 10) {
+    lines.push('Variabilitas detak cukup tinggi (' + std.toFixed(1) + ' bpm), mungkin indikasikan aritmia atau stres.');
+  } else {
+    lines.push('Detak jantung relatif stabil.');
+  }
+  return lines.join(' ');
+}
+
+function explainVolt(mean, std, count, stats) {
+  var lines = [];
+  lines.push('Berdasarkan ' + count + ' sampel tegangan, rata-rata tegangan ' + mean.toFixed(2) + ' V dengan simpangan baku ' + std.toFixed(3) + ' V.');
+  lines.push('Tegangan berkisar antara ' + stats.min + ' V hingga ' + stats.max + ' V.');
+  lines.push('Sebesar ' + stats.pct1 + '% data dalam rentang 1σ, ' + stats.pct2 + '% dalam 2σ, dan ' + stats.pct3 + '% dalam 3σ.');
+
+  if (mean < 4.5) {
+    lines.push('<strong>Kesimpulan:</strong> Tegangan rendah (di bawah 4.5V), risiko mati pada sensor IoT. Periksa sumber daya listrik.');
+  } else if (mean > 5.5) {
+    lines.push('<strong>Kesimpulan:</strong> Tegangan tinggi (di atas 5.5V), risiko kerusakan komponen elektronik. Perlukan regulator tegangan.');
+  } else {
+    lines.push('<strong>Kesimpulan:</strong> Tegangan dalam kisaran nominal 5V, aman untuk sensor IoT.');
+  }
+
+  if (std > 0.3) {
+    lines.push('Fluktuasi tegangan cukup besar (' + std.toFixed(3) + ' V), daya listrik tidak stabil.');
+  } else {
+    lines.push('Tegangan listrik stabil dengan fluktuasi minimal.');
+  }
+  return lines.join(' ');
+}
+
 function genChart(type) {
   if (type === 'temp') {
     var mean = parseFloat(document.getElementById('tempMean').value) || 22.5;
@@ -584,9 +673,12 @@ function genChart(type) {
     document.getElementById('tempMeanVal').textContent = mean;
     document.getElementById('tempStdVal').textContent = std;
     document.getElementById('tempCountVal').textContent = count;
+    var data = generateNormalData(mean, std, count);
+    var stats = computeStats(data, mean, std);
     updateChart('temp', 'chartTemp', mean, std, count, 16, 29,
       { bg: 'rgba(108, 142, 255, 0.7)', border: 'rgba(108, 142, 255, 1)' },
       'Suhu Ruangan (°C)');
+    document.getElementById('tempExplanation').innerHTML = explainTemp(mean, std, count, stats);
   } else if (type === 'heart') {
     var mean = parseFloat(document.getElementById('heartMean').value) || 72;
     var std = parseFloat(document.getElementById('heartStd').value) || 6;
@@ -594,9 +686,12 @@ function genChart(type) {
     document.getElementById('heartMeanVal').textContent = mean;
     document.getElementById('heartStdVal').textContent = std;
     document.getElementById('heartCountVal').textContent = count;
+    var data = generateNormalData(mean, std, count);
+    var stats = computeStats(data, mean, std);
     updateChart('heart', 'chartHeart', mean, std, count, 50, 95,
       { bg: 'rgba(255, 107, 107, 0.7)', border: 'rgba(255, 107, 107, 1)' },
       'Detak Jantung (bpm)');
+    document.getElementById('heartExplanation').innerHTML = explainHeart(mean, std, count, stats);
   } else if (type === 'volt') {
     var mean = parseFloat(document.getElementById('voltMean').value) || 5.0;
     var std = parseFloat(document.getElementById('voltStd').value) || 0.15;
@@ -604,9 +699,12 @@ function genChart(type) {
     document.getElementById('voltMeanVal').textContent = mean;
     document.getElementById('voltStdVal').textContent = std;
     document.getElementById('voltCountVal').textContent = count;
+    var data = generateNormalData(mean, std, count);
+    var stats = computeStats(data, mean, std);
     updateChart('volt', 'chartVoltage', mean, std, count, 4.4, 5.6,
       { bg: 'rgba(168, 230, 207, 0.7)', border: 'rgba(168, 230, 207, 1)' },
       'Tegangan (V)');
+    document.getElementById('voltExplanation').innerHTML = explainVolt(mean, std, count, stats);
   }
 }
 
