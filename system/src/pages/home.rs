@@ -183,7 +183,7 @@ pub async fn handler() -> Html<String> {
     pemrograman yang saya pelajari, lengkap dengan simulasi interaktif.
   </p>
   <div class="hero-actions">
-    <a href="./mylearn/" class="btn-primary">Lihat Pembelajaran</a>
+    <a href="/Learning/mylearn/" class="btn-primary">Lihat Pembelajaran</a>
   </div>
 </section>
 
@@ -194,16 +194,16 @@ pub async fn handler() -> Html<String> {
         <span class="label" style="margin-bottom:12px;display:inline-flex;">Materi Terbaru</span>
         <h2 style="margin-top:12px;">Topik Pembelajaran</h2>
       </div>
-      <a href="./mylearn/" class="btn-secondary" style="font-size:12.5px;padding:8px 18px;">Lihat Semua</a>
+      <a href="/Learning/mylearn/" class="btn-secondary" style="font-size:12.5px;padding:8px 18px;">Lihat Semua</a>
     </div>
     <div class="cards-grid">
-      <a href="./Insert-Sorting/" class="learn-card glass">
+      <a href="/Learning/Insert-Sorting/" class="learn-card glass">
         <div class="learn-card-tag">Algoritma / Sorting</div>
         <h3>Insertion Sort</h3>
         <p>Visualisasi animasi proses pengurutan data dengan prinsip insertion sort, dilengkapi simulasi input kustom.</p>
         <div class="learn-card-footer">Interaktif &mdash; Input bebas</div>
       </a>
-      <a href="./Bubble-Sorting/" class="learn-card glass">
+      <a href="/Learning/Bubble-Sorting/" class="learn-card glass">
         <div class="learn-card-tag">Algoritma / Sorting</div>
         <h3>Bubble Sort</h3>
         <p>Visualisasi animasi proses pengurutan data dengan prinsip bubble sort, dilengkapi simulasi input kustom.</p>
@@ -213,5 +213,5 @@ pub async fn handler() -> Html<String> {
   </div>
 </section>
 "#;
-    Html(layout("Beranda", "home", "./", body))
+    Html(layout("Beranda", "home", "/Learning/", body))
 }

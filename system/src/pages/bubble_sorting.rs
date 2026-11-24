@@ -87,12 +87,12 @@ pub async fn handler() -> Html<String> {
       <ul class="sidebar-nav">
         <span class="sidebar-section-label">Algoritma Sorting</span>
         <li>
-          <a href="../Insert-Sorting/">
+          <a href="/Learning/Insert-Sorting/">
             <span class="dot"></span>Insertion Sort
           </a>
         </li>
         <li>
-          <a href="./" class="active">
+          <a href="/Learning/Bubble-Sorting/" class="active">
             <span class="dot"></span>Bubble Sort
           </a>
         </li>
@@ -335,5 +335,5 @@ function runStep() {
 window.addEventListener('DOMContentLoaded', function() { resetSort(); });
 </script>
 "#;
-    Html(layout("Bubble Sort", "bubble", "../", body))
+    Html(layout("Bubble Sort", "bubble", "/Learning/", body))
 }

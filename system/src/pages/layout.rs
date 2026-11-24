@@ -1,7 +1,7 @@
 // Shared layout helper used by all pages
 use std::time::{SystemTime, UNIX_EPOCH};
 
-pub fn layout(title: &str, active: &str, home_href: &str, body: &str) -> String {
+pub fn layout(title: &str, active: &str, base: &str, body: &str) -> String {
     let year = SystemTime::now()
         .duration_since(UNIX_EPOCH)
         .unwrap()
@@ -570,11 +570,11 @@ pub fn layout(title: &str, active: &str, home_href: &str, body: &str) -> String 
 
 <!-- NAVBAR -->
 <nav class="navbar" role="navigation" aria-label="Main navigation">
-  <a class="navbar-brand" href="{home_href}">Learning<span>.</span></a>
+  <a class="navbar-brand" href="{base}">Learning<span>.</span></a>
   <ul class="navbar-nav">
-    <li><a href="{home_href}" class="{nav_home}">Beranda</a></li>
-    <li><a href="./about/" class="{nav_about}">About</a></li>
-    <li><a href="./mylearn/" class="{nav_mylearn}">MyLearn</a></li>
+    <li><a href="{base}" class="{nav_home}">Beranda</a></li>
+    <li><a href="{base}about/" class="{nav_about}">About</a></li>
+    <li><a href="{base}mylearn/" class="{nav_mylearn}">MyLearn</a></li>
   </ul>
   <button class="btn-theme" onclick="toggleTheme()" id="themeBtn" aria-label="Toggle theme">
     <svg id="iconSun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -658,7 +658,7 @@ pub fn layout(title: &str, active: &str, home_href: &str, body: &str) -> String 
 </body>
 </html>"#,
         title = title,
-        home_href = home_href,
+        base = base,
         nav_home    = if active == "home"    { "active" } else { "" },
         nav_about   = if active == "about"   { "active" } else { "" },
         nav_mylearn = if active == "mylearn" || active == "insert" || active == "bubble" { "active" } else { "" },
