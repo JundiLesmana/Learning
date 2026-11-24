@@ -238,5 +238,5 @@ pub async fn handler() -> Html<String> {
   </main>
 </div>
 "#;
-    Html(layout("MyLearn", "mylearn", body))
+    Html(layout("MyLearn", "mylearn", "../", body))
 }

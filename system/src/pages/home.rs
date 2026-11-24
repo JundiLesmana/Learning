@@ -184,24 +184,8 @@ pub async fn handler() -> Html<String> {
   </p>
   <div class="hero-actions">
     <a href="./mylearn/" class="btn-primary">Lihat Pembelajaran</a>
-    <a href="./about/" class="btn-secondary">Tentang Saya</a>
   </div>
 </section>
-
-<div class="stats-row">
-  <div class="stat-card glass">
-    <div class="stat-num">2<span>+</span></div>
-    <div class="stat-label">Topik Dipelajari</div>
-  </div>
-  <div class="stat-card glass">
-    <div class="stat-num">2<span>x</span></div>
-    <div class="stat-label">Simulasi Interaktif</div>
-  </div>
-  <div class="stat-card glass">
-    <div class="stat-num">1<span>k</span></div>
-    <div class="stat-label">Baris Kode</div>
-  </div>
-</div>
 
 <section>
   <div class="container">
@@ -229,5 +213,5 @@ pub async fn handler() -> Html<String> {
   </div>
 </section>
 "#;
-    Html(layout("Beranda", "home", body))
+    Html(layout("Beranda", "home", "./", body))
 }

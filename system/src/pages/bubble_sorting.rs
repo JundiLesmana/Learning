@@ -335,5 +335,5 @@ function runStep() {
 window.addEventListener('DOMContentLoaded', function() { resetSort(); });
 </script>
 "#;
-    Html(layout("Bubble Sort", "bubble", body))
+    Html(layout("Bubble Sort", "bubble", "../", body))
 }

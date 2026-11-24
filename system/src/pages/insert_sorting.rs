@@ -575,5 +575,5 @@ function runStep() {
 window.addEventListener('DOMContentLoaded', function() { resetSort(); });
 </script>
 "#;
-    Html(layout("Insertion Sort", "insert", body))
+    Html(layout("Insertion Sort", "insert", "../", body))
 }

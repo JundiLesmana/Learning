@@ -1,5 +1,12 @@
 // Shared layout helper used by all pages
-pub fn layout(title: &str, active: &str, body: &str) -> String {
+use std::time::{SystemTime, UNIX_EPOCH};
+
+pub fn layout(title: &str, active: &str, home_href: &str, body: &str) -> String {
+    let year = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .unwrap()
+        .as_secs() / 31_536_000 + 1970;
+
     format!(r#"<!DOCTYPE html>
 <html lang="id" data-theme="dark">
 <head>
@@ -286,19 +293,286 @@ pub fn layout(title: &str, active: &str, body: &str) -> String {
     /* =============================================
        SELECTION
     ============================================= */
-    ::selection {{
-      background: var(--accent-soft);
-      color: var(--accent);
+    .loader-overlay {{
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      background: var(--bg-base);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.8s ease;
+    }}
+
+    .loader-hidden {{
+      opacity: 0;
+      pointer-events: none;
+    }}
+
+    /* 3D Book Character */
+    .book-stage {{
+      perspective: 800px;
+      width: 200px;
+      height: 280px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: float 4s ease-in-out infinite;
+    }}
+
+    @keyframes float {{
+      0%, 100% {{ transform: translateY(0); }}
+      50% {{ transform: translateY(-20px); }}
+    }}
+
+    .book-character {{
+      position: relative;
+      width: 120px;
+      height: 180px;
+      transform-style: preserve-3d;
+      animation: bounce 3s ease-in-out infinite;
+    }}
+
+    @keyframes bounce {{
+      0%, 100% {{ transform: rotateX(0) rotateY(0); }}
+      25% {{ transform: rotateX(5deg) rotateY(5deg); }}
+      75% {{ transform: rotateX(-5deg) rotateY(-5deg); }}
+    }}
+
+    .book-part {{
+      position: absolute;
+      transform-style: preserve-3d;
+    }}
+
+    .book-cover {{
+      width: 120px;
+      height: 180px;
+      background: linear-gradient(135deg, #6c8eff 0%, #3a6bdf 100%);
+      border-radius: 6px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+      border: 2px solid rgba(255,255,255,0.2);
+      transform: rotateY(0deg) translateZ(6px);
+    }}
+
+    .book-pages {{
+      width: 14px;
+      height: 180px;
+      background: repeating-linear-gradient(
+        #fff 0,
+        #fff 2px,
+        #f0f0f4 2px,
+        #f0f0f4 4px
+      );
+      border-radius: 0 3px 3px 0;
+      transform: rotateY(90deg) translateZ(53px);
+      box-shadow: -4px 0 15px rgba(0,0,0,0.2);
+    }}
+
+    .book-spine {{
+      width: 12px;
+      height: 180px;
+      background: linear-gradient(135deg, #4a6bcf 0%, #2a4daf 100%);
+      border-radius: 3px 0 0 3px;
+      transform: rotateY(90deg) translateZ(-53px);
+    }}
+
+    .book-top {{
+      width: 120px;
+      height: 14px;
+      background: linear-gradient(135deg, #8aa4ff 0%, #5a7df0 100%);
+      transform: rotateX(90deg) translateZ(67px);
+      border-radius: 6px 6px 0 0;
+    }}
+
+    .book-bottom {{
+      width: 120px;
+      height: 14px;
+      background: linear-gradient(135deg, #4a6bcf 0%, #2a4daf 100%);
+      transform: rotateX(-90deg) translateZ(107px);
+      border-radius: 0 0 6px 6px;
+    }}
+
+    /* Face */
+    .book-face {{
+      position: absolute;
+      top: 45px;
+      left: 20px;
+      width: 80px;
+      height: 60px;
+      transform: translateZ(12px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }}
+
+    .eye {{
+      width: 10px;
+      height: 10px;
+      background: #fff;
+      border-radius: 50%;
+      margin: 0 8px;
+      position: relative;
+      box-shadow: 0 0 8px rgba(255,255,255,0.6);
+    }}
+
+    .eye::after {{
+      content: '';
+      position: absolute;
+      top: 2px;
+      left: 3px;
+      width: 4px;
+      height: 4px;
+      background: #000;
+      border-radius: 50%;
+    }}
+
+    .eyes {{
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 6px;
+    }}
+
+    .smile {{
+      width: 24px;
+      height: 10px;
+      border: 2px solid #fff;
+      border-top: none;
+      border-radius: 0 0 12px 12px;
+    }}
+
+    /* Graduation Cap */
+    .grad-cap {{
+      position: absolute;
+      top: -28px;
+      left: 28px;
+      width: 64px;
+      height: 20px;
+      background: #1a1a2e;
+      border-radius: 4px 4px 0 0;
+      transform: translateZ(20px);
+    }}
+
+    .grad-cap-top {{
+      position: absolute;
+      top: -10px;
+      left: 0;
+      width: 64px;
+      height: 10px;
+      background: #1a1a2e;
+    }}
+
+    .grad-tassel {{
+      position: absolute;
+      top: 20px;
+      left: 30px;
+      width: 4px;
+      height: 30px;
+      background: #ffd700;
+      transform: translateZ(20px);
+      animation: swing 2s ease-in-out infinite;
+    }}
+
+    @keyframes swing {{
+      0%, 100% {{ transform: translateZ(20px) rotate(0deg); }}
+      50% {{ transform: translateZ(20px) rotate(15deg); }}
+    }}
+
+    /* Limbs */
+    .arm {{
+      position: absolute;
+      width: 8px;
+      height: 35px;
+      background: linear-gradient(135deg, #6c8eff 0%, #3a6bdf 100%);
+      border-radius: 4px;
+      transform: translateZ(10px);
+    }}
+
+    .arm-left {{
+      top: 70px;
+      left: -8px;
+      transform: rotate(-30deg) translateZ(10px);
+    }}
+
+    .arm-right {{
+      top: 70px;
+      right: -8px;
+      transform: rotate(30deg) translateZ(10px);
+    }}
+
+    .leg {{
+      position: absolute;
+      width: 10px;
+      height: 30px;
+      background: linear-gradient(135deg, #4a6bcf 0%, #2a4daf 100%);
+      border-radius: 4px;
+      bottom: -30px;
+      transform: translateZ(10px);
+    }}
+
+    .leg-left {{
+      left: 25px;
+      transform: rotate(-15deg) translateZ(10px);
+    }}
+
+    .leg-right {{
+      right: 25px;
+      transform: rotate(15deg) translateZ(10px);
+    }}
+
+    .loader-text {{
+      margin-top: 32px;
+      color: var(--text-primary);
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-size: 12px;
+      animation: pulse 2s ease-in-out infinite;
+    }}
+
+    @keyframes pulse {{
+      0%, 100% {{ opacity: 1; }}
+      50% {{ opacity: 0.5; }}
     }}
   </style>
 </head>
 <body>
 
+<!-- Loader Overlay (first visit only) -->
+<div class="loader-overlay" id="loaderOverlay">
+  <div class="book-stage">
+    <div class="book-character">
+      <div class="book-part book-cover"></div>
+      <div class="book-part book-pages"></div>
+      <div class="book-part book-spine"></div>
+      <div class="book-part book-top"></div>
+      <div class="book-part book-bottom"></div>
+      <div class="grad-cap">
+        <div class="grad-cap-top"></div>
+        <div class="grad-tassel"></div>
+      </div>
+      <div class="arm arm-left"></div>
+      <div class="arm arm-right"></div>
+      <div class="leg leg-left"></div>
+      <div class="leg leg-right"></div>
+      <div class="book-face">
+        <div class="eyes">
+          <div class="eye"></div>
+          <div class="eye"></div>
+        </div>
+        <div class="smile"></div>
+      </div>
+    </div>
+  </div>
+  <div class="loader-text">Selamat Belajar</div>
+</div>
+
 <!-- NAVBAR -->
 <nav class="navbar" role="navigation" aria-label="Main navigation">
-  <a class="navbar-brand" href="./">Learning<span>.</span></a>
+  <a class="navbar-brand" href="{home_href}">Learning<span>.</span></a>
   <ul class="navbar-nav">
-    <li><a href="./" class="{nav_home}">Beranda</a></li>
+    <li><a href="{home_href}" class="{nav_home}">Beranda</a></li>
     <li><a href="./about/" class="{nav_about}">About</a></li>
     <li><a href="./mylearn/" class="{nav_mylearn}">MyLearn</a></li>
   </ul>
@@ -366,14 +640,29 @@ pub fn layout(title: &str, active: &str, body: &str) -> String {
       }}
     }});
   }})();
+
+  // ---- Loader Animation (first visit) ----
+  (function() {{
+    var overlay = document.getElementById('loaderOverlay');
+    var visited = localStorage.getItem('learning-visited');
+    if (visited === 'true') {{
+      overlay.classList.add('loader-hidden');
+      return;
+    }}
+    setTimeout(function() {{
+      overlay.classList.add('loader-hidden');
+      localStorage.setItem('learning-visited', 'true');
+    }}, 4000);
+  }})();
 </script>
 </body>
 </html>"#,
         title = title,
+        home_href = home_href,
         nav_home    = if active == "home"    { "active" } else { "" },
         nav_about   = if active == "about"   { "active" } else { "" },
         nav_mylearn = if active == "mylearn" || active == "insert" || active == "bubble" { "active" } else { "" },
         body = body,
-        year = "2025"
+        year = year
     )
 }
