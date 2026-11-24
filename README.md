@@ -12,6 +12,8 @@ Website dokumentasi catatan belajar dibangun dengan **Rust** menggunakan framewo
 - Simulasi interaktif:
   - **Insertion Sort** — animasi step-by-step, input kustom, kecepatan adjustable
   - **Bubble Sort** — animasi perbandingan & pertukaran, input kustom
+  - **Pointer Simulation** — visualisasi memory layout, dereferensi, referensi, string character counter
+  - **Distribusi Normal** — statistika & probabilitas, grafik histogram interaktif, data IoT (suhu, detak jantung, tegangan listrik)
 
 ## Halaman
 
@@ -22,6 +24,8 @@ Website dokumentasi catatan belajar dibangun dengan **Rust** menggunakan framewo
 | `/mylearn` | Daftar pembelajaran |
 | `/Insert-Sorting` | Simulasi Insertion Sort |
 | `/Bubble-Sorting` | Simulasi Bubble Sort |
+| `/Pointer` | Simulasi Pointer & String Character Counter |
+| `/Distribusi-Normal` | Statistika Distribusi Normal (IoT) |
 
 ## Menjalankan
 

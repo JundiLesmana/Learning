@@ -133,8 +133,11 @@ pub async fn handler() -> Html<String> {
         <span class="skill-tag">Rust</span>
         <span class="skill-tag">Insertion Sort</span>
         <span class="skill-tag">Bubble Sort</span>
+        <span class="skill-tag">Pointer</span>
+        <span class="skill-tag">Distribusi Normal</span>
         <span class="skill-tag">Algoritma</span>
         <span class="skill-tag">Struktur Data</span>
+        <span class="skill-tag">Statistika</span>
         <span class="skill-tag">Web Development</span>
       </div>
     </div>
@@ -159,10 +162,17 @@ pub async fn handler() -> Html<String> {
           </div>
         </div>
         <div class="timeline-item">
-          <div class="timeline-dot" style="background:var(--text-muted);box-shadow:none;opacity:0.4;"></div>
+          <div class="timeline-dot"></div>
           <div class="timeline-content">
-            <h4 style="color:var(--text-muted);">Topik selanjutnya</h4>
-            <p>Topik berikutnya akan ditambahkan seiring proses belajar berlanjut.</p>
+            <h4>Pointer & Memori</h4>
+            <p>Mempelajari konsep pointer, alamat memori, dereferensi, dan referensi dalam pemrograman.</p>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-dot"></div>
+          <div class="timeline-content">
+            <h4>Distribusi Normal</h4>
+            <p>Mempelajari statistika dan probabilitas, khususnya distribusi normal dengan simulasi grafik interaktif pada data IoT.</p>
           </div>
         </div>
       </div>
