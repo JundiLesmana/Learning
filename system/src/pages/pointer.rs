@@ -474,7 +474,7 @@ pub async fn handler() -> Html<String> {
         <div class="result-value" id="totalChars">0</div>
       </div>
 
-      <div class="code-block">
+      <div class="code-block" id="codeBlock">
         <div class="code-line"><span class="code-keyword">fn</span> <span class="code-func">count_chars</span>(<span class="code-keyword">arr</span>: &[<span class="code-type">&str</span>]) -> <span class="code-type">usize</span> {</div>
         <div class="code-line">&nbsp;&nbsp;<span class="code-keyword">let</span> <span class="code-keyword">mut</span> total = <span class="code-string">"0"</span>;</div>
         <div class="code-line">&nbsp;&nbsp;<span class="code-keyword">for</span> s <span class="code-keyword">in</span> arr {</div>
@@ -571,6 +571,22 @@ function countChars() {
     '<div class="result-value" id="totalChars">' + total + '</div>' +
     '<div style="margin-top:12px;font-size:12px;color:var(--text-secondary);">' +
     details.join(', ') + '</div>';
+
+  // Update code block dynamically based on input
+  var codeLines = [];
+  codeLines.push('<span class="code-keyword">fn</span> <span class="code-func">count_chars</span>(<span class="code-keyword">arr</span>: &[<span class="code-type">&str</span>]) -> <span class="code-type">usize</span> {');
+  codeLines.push('&nbsp;&nbsp;<span class="code-keyword">let</span> <span class="code-keyword">mut</span> total = <span class="code-string">"0"</span>;');
+  codeLines.push('&nbsp;&nbsp;<span class="code-keyword">for</span> s <span class="code-keyword">in</span> arr {');
+  codeLines.push('&nbsp;&nbsp;&nbsp;&nbsp;total += s.<span class="code-func">chars</span>().<span class="code-func">count</span>();');
+  codeLines.push('&nbsp;&nbsp;}');
+  codeLines.push('&nbsp;&nbsp;total');
+  codeLines.push('}');
+  codeLines.push('');
+  codeLines.push('<span class="code-keyword">let</span> data = [' + arr.map(function(s){ return '<span class="code-string">"' + s + '"</span>'; }).join(', ') + '];');
+  codeLines.push('<span class="code-keyword">let</span> result = <span class="code-func">count_chars</span>(&data);');
+  codeLines.push('<span class="code-comment">// result = ' + total + ' karakter</span>');
+
+  document.getElementById('codeBlock').innerHTML = codeLines.join('<br>');
 }
 
 function resetCounter() {
@@ -579,6 +595,22 @@ function resetCounter() {
   document.getElementById('counterResult').innerHTML =
     '<div class="result-label">Total Karakter</div>' +
     '<div class="result-value" id="totalChars">0</div>';
+
+  // Reset code block to default
+  var codeLines = [];
+  codeLines.push('<span class="code-keyword">fn</span> <span class="code-func">count_chars</span>(<span class="code-keyword">arr</span>: &[<span class="code-type">&str</span>]) -> <span class="code-type">usize</span> {');
+  codeLines.push('&nbsp;&nbsp;<span class="code-keyword">let</span> <span class="code-keyword">mut</span> total = <span class="code-string">"0"</span>;');
+  codeLines.push('&nbsp;&nbsp;<span class="code-keyword">for</span> s <span class="code-keyword">in</span> arr {');
+  codeLines.push('&nbsp;&nbsp;&nbsp;&nbsp;total += s.<span class="code-func">chars</span>().<span class="code-func">count</span>();');
+  codeLines.push('&nbsp;&nbsp;}');
+  codeLines.push('&nbsp;&nbsp;total');
+  codeLines.push('}');
+  codeLines.push('');
+  codeLines.push('<span class="code-keyword">let</span> data = [<span class="code-string">"Rust"</span>, <span class="code-string">"Pemrograman"</span>, <span class="code-string">"Pointer"</span>, <span class="code-string">"Belajar"</span>];');
+  codeLines.push('<span class="code-keyword">let</span> result = <span class="code-func">count_chars</span>(&data);');
+  codeLines.push('<span class="code-comment">// result = 22 karakter</span>');
+
+  document.getElementById('codeBlock').innerHTML = codeLines.join('<br>');
 }
 
 // Init on load
