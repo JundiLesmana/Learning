@@ -1602,6 +1602,7 @@ var NetApp = (function () {
     typeLabel: function (k) { return (TYPES[k] || { label: k }).label; },
     typeColor: function (k) { return (TYPES[k] || { color: '#9898b0' }).color; }
   };
+  window.NetApp = NetApp;
 })();
 
 /* =====================================================================
