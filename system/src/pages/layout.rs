@@ -649,7 +649,7 @@ pub fn layout(title: &str, active: &str, base: &str, body: &str) -> String {
 <nav class="navbar" role="navigation" aria-label="Main navigation">
   <a class="navbar-brand" href="{base}">Learning<span>.</span></a>
   <ul class="navbar-nav">
-    <li><a href="{base}" class="{nav_home}">Beranda</a></li>
+    <li><a href="{base}" class="{nav_home}">Home</a></li>
     <li><a href="{base}about/" class="{nav_about}">About</a></li>
     <li><a href="{base}mylearn/" class="{nav_mylearn}">MyLearn</a></li>
   </ul>

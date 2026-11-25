@@ -369,6 +369,12 @@ pub async fn handler() -> Html<String> {
           </a>
         </li>
       </ul>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <main class="pointer-content">
+
     <div class="pointer-header">
       <div class="label">Pointer & Memori</div>
       <h1 style="margin-top:16px;">Simulasi Pointer</h1>
