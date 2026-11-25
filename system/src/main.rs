@@ -13,6 +13,7 @@ async fn main() {
         .route("/Pointer", get(pages::pointer::handler))
         .route("/Distribusi-Normal", get(pages::statistics::handler))
         .route("/Pohon", get(pages::tree::handler))
+        .route("/Jaringan-Komputer", get(pages::network::handler))
         .layer(CorsLayer::permissive());
 
     let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.unwrap();

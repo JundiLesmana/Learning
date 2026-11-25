@@ -220,6 +220,13 @@ pub async fn handler() -> Html<String> {
             Pohon (Tree)
           </a>
         </li>
+        <span class="sidebar-section-label">Jaringan Komputer</span>
+        <li>
+          <a href="/Learning/Jaringan-Komputer/">
+            <span class="dot"></span>
+            Jaringan Komputer
+          </a>
+        </li>
       </ul>
     </div>
   </aside>
@@ -280,6 +287,16 @@ pub async fn handler() -> Html<String> {
         <div class="learn-item-num">05 &mdash; Graf</div>
         <h3>Pohon (Tree)</h3>
         <p>Pohon, hutan, spanning tree, algoritma Prim &amp; Kruskal, dan pohon berakar dengan visualisasi interaktif.</p>
+        <div class="learn-item-meta">
+          <span class="meta-badge">Interaktif</span>
+          <span class="meta-time">3 modul tersedia</span>
+        </div>
+      </a>
+
+      <a href="/Learning/Jaringan-Komputer/" class="learn-item glass">
+        <div class="learn-item-num">06 &mdash; Jaringan</div>
+        <h3>Jaringan Komputer</h3>
+        <p>Susun topologi, pantau kinerja, terapkan defense in depth, dan troubleshooting jaringan lewat diorama 3D interaktif.</p>
         <div class="learn-item-meta">
           <span class="meta-badge">Interaktif</span>
           <span class="meta-time">3 modul tersedia</span>

@@ -108,6 +108,12 @@ pub async fn handler() -> Html<String> {
             <span class="dot"></span>Distribusi Normal
           </a>
         </li>
+        <span class="sidebar-section-label">Jaringan Komputer</span>
+        <li>
+          <a href="/Learning/Jaringan-Komputer/">
+            <span class="dot"></span>Jaringan Komputer
+          </a>
+        </li>
       </ul>
     </div>
   </aside>

@@ -362,12 +362,13 @@ pub async fn handler() -> Html<String> {
             <span class="dot"></span>Bubble Sort
           </a>
         </li>
+        <span class="sidebar-section-label">Jaringan Komputer</span>
+        <li>
+          <a href="/Learning/Jaringan-Komputer/">
+            <span class="dot"></span>Jaringan Komputer
+          </a>
+        </li>
       </ul>
-    </div>
-  </aside>
-
-  <!-- Main -->
-  <main class="pointer-content">
     <div class="pointer-header">
       <div class="label">Pointer & Memori</div>
       <h1 style="margin-top:16px;">Simulasi Pointer</h1>

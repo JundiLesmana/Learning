@@ -7,3 +7,4 @@ pub mod bubble_sorting;
 pub mod pointer;
 pub mod statistics;
 pub mod tree;
+pub mod network;
