@@ -636,6 +636,15 @@ pub async fn handler() -> Html<String> {
   </main>
 </div>
 
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
+
 <script>
 /* =====================================================================
    Jaringan Komputer — shared topology store + pure logic (stage a)
@@ -1147,8 +1156,8 @@ var NetApp = (function () {
 
   function loadThree() {
     return Promise.all([
-      import('https://unpkg.com/three@0.160.0/build/three.module.js'),
-      import('https://unpkg.com/three@0.160.0/examples/jsm/controls/OrbitControls.js')
+      import('three'),
+      import('three/addons/controls/OrbitControls.js')
     ]).then(function (mods) {
       THREE = mods[0];
       OrbitControls = mods[1].OrbitControls;
@@ -1325,6 +1334,7 @@ var NetApp = (function () {
 
   function initThree() {
     var host = document.getElementById('scene3d');
+    labelLayer = document.getElementById('labelLayer');
     scene = new THREE.Scene();
     scene.background = new THREE.Color(0x0a0a0f);
 
@@ -1473,11 +1483,16 @@ var NetApp = (function () {
       // still load so 3D works, but no packet animation
     }
     loadThree().then(function () {
-      try { initThree(); } catch (e) { console.error('Gagal menyiapkan adegan 3D:', e); }
+      try { initThree(); } catch (e) {
+        console.error('Gagal menyiapkan adegan 3D:', e);
+        if (window.NetUI && window.NetUI.setView) window.NetUI.setView('2d');
+      }
     }).catch(function (e) {
       console.error('Gagal memuat Three.js:', e);
       var host = document.getElementById('scene3d');
-      if (host) host.innerHTML = '<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--text-muted);font-size:13px;padding:20px;text-align:center;">Modul 3D tidak dapat dimuat (butuh koneksi internet). Gunakan tombol “Mode 2D”.</div>';
+      if (host) host.innerHTML = '<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--text-muted);font-size:13px;padding:20px;text-align:center;">Modul 3D tidak dapat dimuat (butuh koneksi internet). Beralih ke Mode 2D otomatis.</div>';
+      // Auto-fallback so the visualization area is never blank.
+      if (window.NetUI && window.NetUI.setView) window.NetUI.setView('2d');
     });
   }
 
