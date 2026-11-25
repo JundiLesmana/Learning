@@ -1796,6 +1796,7 @@ var NetApp = (function () {
       : (v === '2d' ? 'Tampilan 2D (SVG) — klik perangkat untuk melihat detail.' : 'Tabel aksesibel berisi data topologi yang sama.');
     window.dispatchEvent(new CustomEvent('netviewchange', { detail: v }));
     if (v === '2d') render2D();
+    if (v === 'table') renderAccessTable();
   }
   $('view3d').addEventListener('click', function () { setView('3d'); });
   $('view2d').addEventListener('click', function () { setView('2d'); });
@@ -1892,7 +1893,7 @@ var NetApp = (function () {
   NetApp.loadPreset('kantor');
   renderAll();
   setView('3d');
-  NetApp.subscribe(function () { if (view === '2d') render2D(); });
+  NetApp.subscribe(function () { if (view === '2d') render2D(); if (view === 'table') renderAccessTable(); });
 
   window.NetUI = { renderAll: renderAll, setView: setView, showDetail: showDetail };
 })();
