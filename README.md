@@ -14,6 +14,7 @@ Website dokumentasi catatan belajar dibangun dengan **Rust** menggunakan framewo
   - **Bubble Sort** — animasi perbandingan & pertukaran, input kustom
   - **Pointer Simulation** — visualisasi memory layout, dereferensi, referensi, string character counter
   - **Distribusi Normal** — statistika & probabilitas, grafik histogram interaktif, data IoT (suhu, detak jantung, tegangan listrik)
+- **Jaringan Komputer** — topologi jaringan, monitoring, defense in depth, troubleshooting dengan simulasi 3D interaktif
 
 ## Halaman
 
@@ -26,6 +27,7 @@ Website dokumentasi catatan belajar dibangun dengan **Rust** menggunakan framewo
 | `/Bubble-Sorting` | Simulasi Bubble Sort |
 | `/Pointer` | Simulasi Pointer & String Character Counter |
 | `/Distribusi-Normal` | Statistika Distribusi Normal (IoT) |
+| `/Jaringan-Komputer` | Jaringan Komputer (Topologi, Monitoring, Defense, Troubleshooting) |
 
 ## Menjalankan
 

@@ -139,6 +139,11 @@ pub async fn handler() -> Html<String> {
         <span class="skill-tag">Struktur Data</span>
         <span class="skill-tag">Statistika</span>
         <span class="skill-tag">Web Development</span>
+        <span class="skill-tag">Jaringan Komputer</span>
+        <span class="skill-tag">Topologi Jaringan</span>
+        <span class="skill-tag">Monitoring Jaringan</span>
+        <span class="skill-tag">Defense in Depth</span>
+        <span class="skill-tag">Troubleshooting</span>
       </div>
     </div>
   </div>
@@ -173,9 +178,16 @@ pub async fn handler() -> Html<String> {
           <div class="timeline-content">
             <h4>Distribusi Normal</h4>
             <p>Mempelajari statistika dan probabilitas, khususnya distribusi normal dengan simulasi grafik interaktif pada data IoT.</p>
-          </div>
-        </div>
-      </div>
+           </div>
+         </div>
+         <div class="timeline-item">
+           <div class="timeline-dot"></div>
+           <div class="timeline-content">
+             <h4>Jaringan Komputer</h4>
+             <p>Mempelajari topologi jaringan, monitoring, defense in depth, dan troubleshooting dengan simulasi 3D interaktif.</p>
+           </div>
+         </div>
+       </div>
     </div>
   </div>
 
