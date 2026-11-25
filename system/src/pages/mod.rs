@@ -6,3 +6,4 @@ pub mod insert_sorting;
 pub mod bubble_sorting;
 pub mod pointer;
 pub mod statistics;
+pub mod tree;

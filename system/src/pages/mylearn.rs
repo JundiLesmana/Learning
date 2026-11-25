@@ -213,6 +213,13 @@ pub async fn handler() -> Html<String> {
             Distribusi Normal
           </a>
         </li>
+        <span class="sidebar-section-label">Graf Terapan</span>
+        <li>
+          <a href="/Learning/Pohon/">
+            <span class="dot"></span>
+            Pohon (Tree)
+          </a>
+        </li>
       </ul>
     </div>
   </aside>
@@ -266,6 +273,16 @@ pub async fn handler() -> Html<String> {
         <div class="learn-item-meta">
           <span class="meta-badge">Interaktif</span>
           <span class="meta-time">Grafik tersedia</span>
+        </div>
+      </a>
+
+      <a href="/Learning/Pohon/" class="learn-item glass">
+        <div class="learn-item-num">05 &mdash; Graf</div>
+        <h3>Pohon (Tree)</h3>
+        <p>Pohon, hutan, spanning tree, algoritma Prim &amp; Kruskal, dan pohon berakar dengan visualisasi interaktif.</p>
+        <div class="learn-item-meta">
+          <span class="meta-badge">Interaktif</span>
+          <span class="meta-time">3 modul tersedia</span>
         </div>
       </a>
     </div>

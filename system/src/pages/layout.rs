@@ -732,7 +732,7 @@ pub fn layout(title: &str, active: &str, base: &str, body: &str) -> String {
         base = base,
         nav_home    = if active == "home"    { "active" } else { "" },
         nav_about   = if active == "about"   { "active" } else { "" },
-        nav_mylearn = if active == "mylearn" || active == "insert" || active == "bubble" || active == "pointer" || active == "statistics" { "active" } else { "" },
+        nav_mylearn = if active == "mylearn" || active == "insert" || active == "bubble" || active == "pointer" || active == "statistics" || active == "tree" { "active" } else { "" },
         body = body,
         year = year
     )
