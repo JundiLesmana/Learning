@@ -1048,9 +1048,9 @@ var EigenApp = (function(){
     // Step 6: summary + cross-check
     var tr = EigenMath.trace(A);
     var detA = EigenMath.detMat(A);
-    var sumRoots = Fraction.ZERO(), prodRoots = Fraction.ONE();
+    var sumRoots = EigenMath.Fraction.ZERO(), prodRoots = EigenMath.Fraction.ONE();
     var allExact = roots.every(function(r){ return r.exact; });
-    roots.forEach(function(r){ sumRoots = sumRoots.add(r.frac || new Fraction(Math.round(r.re * 1e4) / 1e4, 1)); prodRoots = prodRoots.mul(r.frac || new Fraction(Math.round(r.re * 1e4) / 1e4, 1)); });
+    roots.forEach(function(r){ sumRoots = sumRoots.add(r.frac || new EigenMath.Fraction(Math.round(r.re * 1e4) / 1e4, 1)); prodRoots = prodRoots.mul(r.frac || new EigenMath.Fraction(Math.round(r.re * 1e4) / 1e4, 1)); });
     var sumOk = allExact ? sumRoots.eq(tr) : Math.abs(sumRoots.toDec() - tr.toDec()) < 1e-6;
     var prodOk = allExact ? prodRoots.eq(detA) : Math.abs(prodRoots.toDec() - detA.toDec()) < 1e-6;
 
@@ -1159,11 +1159,11 @@ var EigenApp = (function(){
 
   /* presets */
   var presets = {
-    note: [[ new Fraction(3), new Fraction(2) ], [ new Fraction(-1), new Fraction(0) ]],
-    diag: [[ new Fraction(2), new Fraction(0) ], [ new Fraction(0), new Fraction(5) ]],
-    sym:  [[ new Fraction(2), new Fraction(1) ], [ new Fraction(1), new Fraction(2) ]],
-    rep:  [[ new Fraction(2), new Fraction(1) ], [ new Fraction(0), new Fraction(2) ]],
-    comp: [[ new Fraction(0), new Fraction(-1) ], [ new Fraction(1), new Fraction(0) ]]
+    note: [[ new EigenMath.Fraction(3), new EigenMath.Fraction(2) ], [ new EigenMath.Fraction(-1), new EigenMath.Fraction(0) ]],
+    diag: [[ new EigenMath.Fraction(2), new EigenMath.Fraction(0) ], [ new EigenMath.Fraction(0), new EigenMath.Fraction(5) ]],
+    sym:  [[ new EigenMath.Fraction(2), new EigenMath.Fraction(1) ], [ new EigenMath.Fraction(1), new EigenMath.Fraction(2) ]],
+    rep:  [[ new EigenMath.Fraction(2), new EigenMath.Fraction(1) ], [ new EigenMath.Fraction(0), new EigenMath.Fraction(2) ]],
+    comp: [[ new EigenMath.Fraction(0), new EigenMath.Fraction(-1) ], [ new EigenMath.Fraction(1), new EigenMath.Fraction(0) ]]
   };
   function applyPreset(key){
     var p = presets[key];
@@ -1180,7 +1180,7 @@ var EigenApp = (function(){
     var m = [];
     for (var i = 0; i < n; i++){
       var row = [];
-      for (var j = 0; j < n; j++) row.push(new Fraction(Math.floor(Math.random() * 11) - 5));
+      for (var j = 0; j < n; j++) row.push(new EigenMath.Fraction(Math.floor(Math.random() * 11) - 5));
       m.push(row);
     }
     A = m;
