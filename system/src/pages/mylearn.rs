@@ -227,6 +227,13 @@ pub async fn handler() -> Html<String> {
             Jaringan Komputer
           </a>
         </li>
+        <span class="sidebar-section-label">Aljabar Linear</span>
+        <li>
+          <a href="/Learning/Nilai-Eigen/">
+            <span class="dot"></span>
+            Nilai &amp; Vektor Eigen
+          </a>
+        </li>
       </ul>
     </div>
   </aside>
@@ -300,6 +307,16 @@ pub async fn handler() -> Html<String> {
         <div class="learn-item-meta">
           <span class="meta-badge">Interaktif</span>
           <span class="meta-time">3 modul tersedia</span>
+        </div>
+      </a>
+
+      <a href="/Learning/Nilai-Eigen/" class="learn-item glass">
+        <div class="learn-item-num">07 &mdash; Aljabar Linear</div>
+        <h3>Nilai &amp; Vektor Eigen</h3>
+        <p>Mencari nilai eigen dan vektor eigen dari matriks dengan kalkulator langkah demi langkah, ruang eigen, dan visualisasi geometri 2D.</p>
+        <div class="learn-item-meta">
+          <span class="meta-badge">Interaktif</span>
+          <span class="meta-time">Kalkulator tersedia</span>
         </div>
       </a>
     </div>

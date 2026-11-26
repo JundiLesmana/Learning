@@ -744,6 +744,8 @@ pub fn topology_markup() -> String {
         <li><a href="/Learning/Pohon/"><span class="dot"></span>Pohon (Tree)</a></li>
         <span class="sidebar-section-label">Jaringan Komputer</span>
         <li><a href="/Learning/Jaringan-Komputer/" class="active"><span class="dot"></span>Jaringan Komputer</a></li>
+        <span class="sidebar-section-label">Aljabar Linear</span>
+        <li><a href="/Learning/Nilai-Eigen/"><span class="dot"></span>Nilai &amp; Vektor Eigen</a></li>
       </ul>
     </div>
   </aside>

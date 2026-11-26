@@ -1,4 +1,4 @@
-use learning_notes::pages::{home, about, mylearn, insert_sorting, bubble_sorting, pointer, statistics, tree, network};
+use learning_notes::pages::{home, about, mylearn, insert_sorting, bubble_sorting, pointer, statistics, tree, network, eigen};
 use std::fs;
 use std::path::Path;
 
@@ -17,6 +17,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         ("Distribusi-Normal/index.html", statistics::handler().await.0),
         ("Pohon/index.html", tree::handler().await.0),
         ("Jaringan-Komputer/index.html", network::handler().await.0),
+        ("Nilai-Eigen/index.html", eigen::handler().await.0),
     ];
 
     for (path, html) in routes {
