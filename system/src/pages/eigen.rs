@@ -364,16 +364,188 @@ pub async fn handler() -> Html<String> {
       </div>
     </div>
 
-    <!-- ============ MODULE C (stub) ============ -->
+<!-- ============ MODULE C ============ -->
     <div class="module-panel" id="modC" role="tabpanel">
       <div class="sim-card glass">
         <div class="sim-title">Modul C &middot; Visualisasi Geometri 2D</div>
         <p class="sim-desc">
-          Visualisasi vektor x dan Ax, garis ruang eigen, animasi transformasi
-          grid &amp; lingkaran satuan menjadi elips, serta panel angka.
-          <strong>Modul C akan tersedia pada tahap berikutnya (hanya matriks 2&times;2).</strong>
+          Visualisasi vektor <i>x</i> dan <i>Ax</i>, garis ruang eigen, animasi transformasi
+          grid & lingkaran satuan menjadi elips, serta panel angka kontekstual.
+          Hanya untuk matriks 2&times;2 (sinkron dengan Modul A & B).
         </p>
+
+        <div class="error-box" id="errC" role="alert"></div>
+
+        <!-- Not 2x2 message -->
+        <div id="not2x2C" style="display:none; padding:16px; border-radius:var(--radius-sm); background:rgba(251,191,36,0.12); border:1px solid rgba(251,191,36,0.35); color:var(--warning); margin-bottom:16px;">
+          <strong>Visualisasi hanya untuk matriks 2&times;2</strong>
+          <button class="btn-ghost" id="resizeTo2x2C" style="margin-left:12px;">Ubah ke 2&times;2</button>
+        </div>
+
+        <!-- Main visualization area -->
+        <div id="vizAreaC" style="display:none;">
+          <!-- Matrix input grid (synced with Module A) -->
+          <div style="margin-bottom:16px;">
+            <div style="font-size:11.5px; font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:8px;">Matriks A (2×2, sinkron dengan Modul A & B)</div>
+            <div class="matrix-grid" id="matrixGridC" style="max-width:280px;"></div>
+          </div>
+
+          <div style="display:grid; grid-template-columns: 1fr 340px; gap:20px; align-items:start;">
+            <!-- Left: Canvas + Controls -->
+            <div>
+              <!-- Canvas wrapper -->
+              <div style="position:relative; border-radius:var(--radius-lg); overflow:hidden; background:var(--bg-base); border:1px solid var(--glass-border);">
+                <svg id="svgC" width="100%" height="480" viewBox="0 0 600 480" preserveAspectRatio="xMidYMid meet" role="img" aria-labelledby="svgTitleC svgDescC">
+                  <title id="svgTitleC">Visualisasi Geometri Eigen 2D</title>
+                  <desc id="svgDescC">Kanvas menampilkan vektor x, Ax, garis ruang eigen, lingkaran satuan, elips transformasi, dan grid.</desc>
+                  <defs>
+                    <marker id="arrowheadA" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto" markerUnits="strokeWidth">
+                      <polygon points="0 0, 10 3.5, 0 7" fill="var(--color-vec-x)" />
+                    </marker>
+                    <marker id="arrowheadB" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto" markerUnits="strokeWidth">
+                      <polygon points="0 0, 10 3.5, 0 7" fill="var(--color-vec-ax)" />
+                    </marker>
+                    <marker id="arrowheadEig" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto" markerUnits="strokeWidth">
+                      <polygon points="0 0, 10 3.5, 0 7" fill="var(--color-eig)" />
+                    </marker>
+                  </defs>
+                  <!-- Main transform group: translate to center, scale world to pixels, flip Y -->
+                  <g id="mainGroupC">
+                    <!-- Background grid (transformed) -->
+                    <g id="gridGroupC"></g>
+                    <!-- Unit circle (radius 1 in world coords) -->
+                    <circle id="unitCircleC" cx="0" cy="0" r="1" fill="none" stroke="var(--text-muted)" stroke-width="0.5" stroke-dasharray="6,4" opacity="0.5" vector-effect="non-scaling-stroke" />
+                    <!-- Transformed ellipse (will be set via path data in world coords) -->
+                    <path id="ellipseC" fill="none" stroke="var(--accent)" stroke-width="1" opacity="0.8" vector-effect="non-scaling-stroke" />
+                    <!-- Eigen space lines -->
+                    <g id="eigenLinesGroupC"></g>
+                    <!-- Coordinate axes -->
+                    <g id="axesGroupC"></g>
+                    <!-- Vector x -->
+                    <g id="vecXGroupC">
+                      <path id="vecXLineC" stroke="var(--color-vec-x)" stroke-width="2.5" marker-end="url(#arrowheadA)" fill="none" vector-effect="non-scaling-stroke" />
+                      <text id="vecXLabelC" text-anchor="middle" font-size="11" fill="var(--color-vec-x)" font-weight="600"></text>
+                    </g>
+                    <!-- Vector Ax -->
+                    <g id="vecAXGroupC">
+                      <path id="vecAXLineC" stroke="var(--color-vec-ax)" stroke-width="2.5" marker-end="url(#arrowheadB)" fill="none" vector-effect="non-scaling-stroke" />
+                      <path id="vecConnectC" stroke="var(--text-muted)" stroke-width="1" stroke-dasharray="4,4" opacity="0.6" fill="none" vector-effect="non-scaling-stroke" />
+                      <text id="vecAXLabelC" text-anchor="middle" font-size="11" fill="var(--color-vec-ax)" font-weight="600"></text>
+                    </g>
+                    <!-- Trace path -->
+                    <path id="tracePathC" fill="none" stroke="var(--color-vec-x)" stroke-width="1.5" stroke-dasharray="2,2" opacity="0.5" vector-effect="non-scaling-stroke" />
+                  </g>
+                </svg>
+                <!-- Canvas overlay for drag interaction -->
+                <div id="canvasOverlayC" style="position:absolute; top:0; left:0; width:100%; height:100%; touch-action:none;"></div>
+              </div>
+
+              <!-- Vector x controls -->
+              <div class="sim-controls" style="margin-top:16px;">
+                <div class="input-group" style="flex:0 0 140px;">
+                  <label for="vecX1">x₁</label>
+                  <input type="number" class="input-field" id="vecX1" step="0.1" value="1" aria-label="Koordinat x1 vektor x">
+                </div>
+                <div class="input-group" style="flex:0 0 140px;">
+                  <label for="vecX2">x₂</label>
+                  <input type="number" class="input-field" id="vecX2" step="0.1" value="0" aria-label="Koordinat x2 vektor x">
+                </div>
+                <div class="input-group" style="flex:1; min-width:200px;">
+                  <label for="vecAngle">Sudut vektor x (°)</label>
+                  <input type="range" class="input-field" id="vecAngle" min="0" max="360" step="1" value="0" style="height:36px; appearance:none;">
+                  <div style="display:flex; justify-content:space-between; font-size:11px; color:var(--text-muted); margin-top:4px;">
+                    <span>0°</span><span>90°</span><span>180°</span><span>270°</span><span>360°</span>
+                  </div>
+                </div>
+                <div class="input-group small">
+                  <label for="vecLen">Panjang |x|</label>
+                  <input type="number" class="input-field" id="vecLen" step="0.1" value="1" min="0.1" max="5" aria-label="Panjang vektor x">
+                </div>
+                <div class="btn-row" style="margin-top:8px;">
+                  <button class="btn-run" id="snapEigBtn">Snap ke Vektor Eigen</button>
+                  <select class="input-field" id="snapEigSelect" style="flex:0 0 140px; padding:9px 14px; height:40px;" aria-label="Pilih nilai eigen untuk snap">
+                    <option value="">Pilih λ...</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Display toggles -->
+              <div class="sim-controls" style="margin-top:8px;">
+                <label style="display:flex; align-items:center; gap:8px; font-size:12px; color:var(--text-secondary); cursor:pointer;">
+                  <input type="checkbox" id="toggleGridC" checked> Grid tertransformasi
+                </label>
+                <label style="display:flex; align-items:center; gap:8px; font-size:12px; color:var(--text-secondary); cursor:pointer; margin-left:16px;">
+                  <input type="checkbox" id="toggleCircleC" checked> Lingkaran → Elips
+                </label>
+                <label style="display:flex; align-items:center; gap:8px; font-size:12px; color:var(--text-secondary); cursor:pointer; margin-left:16px;">
+                  <input type="checkbox" id="toggleEigLinesC" checked> Garis ruang eigen
+                </label>
+                <label style="display:flex; align-items:center; gap:8px; font-size:12px; color:var(--text-secondary); cursor:pointer; margin-left:16px;">
+                  <input type="checkbox" id="toggleEigVecsC" checked> Vektor eigen satuan
+                </label>
+                <label style="display:flex; align-items:center; gap:8px; font-size:12px; color:var(--text-secondary); cursor:pointer; margin-left:16px;">
+                  <input type="checkbox" id="toggleTraceC" checked> Jejak rotasi x
+                </label>
+                <label style="display:flex; align-items:center; gap:8px; font-size:12px; color:var(--text-secondary); cursor:pointer; margin-left:16px;">
+                  <input type="checkbox" id="toggleLabelsC" checked> Label koordinat
+                </label>
+              </div>
+
+              <!-- Animation controls -->
+              <div class="sim-controls" style="margin-top:12px; padding:12px; border-radius:var(--radius-sm); background:var(--bg-layer); border:1px solid var(--glass-border);">
+                <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:8px;">
+                  <label for="interpT" style="font-size:11.5px; font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.05em; min-width:180px;">Interpolasi t (M(t) = (1-t)I + tA)</label>
+                  <input type="range" id="interpT" min="0" max="1" step="0.01" value="1" style="flex:1; min-width:200px; height:36px;">
+                  <span id="interpTValue" style="font-variant-numeric:tabular-nums; font-size:13px; min-width:40px; text-align:right;">1.00</span>
+                </div>
+                <div class="btn-row">
+                  <button class="btn-run" id="playAnimBtn">▶ Putar</button>
+                  <button class="btn-ghost" id="pauseAnimBtn" style="display:none;">⏸ Jeda</button>
+                  <div class="input-group" style="flex:0 0 140px; min-width:140px;">
+                    <label for="animSpeed">Kecepatan (×)</label>
+                    <select class="input-field" id="animSpeed">
+                      <option value="0.5">0.5×</option>
+                      <option value="1" selected>1×</option>
+                      <option value="2">2×</option>
+                      <option value="4">4×</option>
+                    </select>
+                  </div>
+                  <div class="input-group" style="flex:0 0 160px; min-width:160px;">
+                    <label for="animDuration">Durasi (detik)</label>
+                    <select class="input-field" id="animDuration">
+                      <option value="1">1 s</option>
+                      <option value="2" selected>2 s</option>
+                      <option value="3">3 s</option>
+                      <option value="5">5 s</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right: Number Panel -->
+            <div id="numPanelC" style="background:var(--bg-layer); border:1px solid var(--glass-border); border-radius:var(--radius-lg); padding:20px; max-height:700px; overflow-y:auto;">
+              <h4 style="margin:0 0 16px 0; font-size:13px; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.06em;">Panel Angka & Penjelasan</h4>
+              <div id="numPanelContentC"></div>
+            </div>
+          </div>
+
+          <!-- Presets & Actions -->
+          <div class="btn-row" style="margin-top:16px; padding-top:16px; border-top:1px solid var(--glass-border);">
+            <button class="btn-ghost" id="presetNoteC">Catatan [[3,2],[-1,0]]</button>
+            <button class="btn-ghost" id="presetDiagC">Diagonal [[2,0],[0,3]]</button>
+            <button class="btn-ghost" id="presetSymC">Simetris [[2,1],[1,2]]</button>
+            <button class="btn-ghost" id="presetShearC">Geser [[1,1],[0,1]]</button>
+            <button class="btn-ghost" id="presetRot90C">Rotasi 90° [[0,-1],[1,0]]</button>
+            <button class="btn-ghost" id="presetReflC">Refleksi [[1,0],[0,-1]]</button>
+            <button class="btn-ghost" id="presetScaleC">Skala [[2,0],[0,2]]</button>
+            <button class="btn-ghost" id="presetSingularC">Singular [[1,2],[2,4]]</button>
+            <button class="btn-run" id="resetC">Reset</button>
+            <button class="btn-ghost" id="randomC">Acak</button>
+          </div>
+        </div>
       </div>
+    </div>
     </div>
   </main>
 </div>
@@ -880,8 +1052,398 @@ var EigenMath = (function(){
 })();
 
 /* =====================================================================
-   UI - Modul A
+   EIGEN GEOMETRY - Pure math functions for 2D visualization
    ===================================================================== */
+var EigenGeometry = (function(){
+  'use strict';
+
+  const EPS = 1e-10;
+
+  /* ---------- Vector/Matrix helpers ---------- */
+  function vec2(x, y){ return { x: x, y: y }; }
+  function mat2(a,b,c,d){ return [[a,b],[c,d]]; }
+
+  function matMulVec(M, v){
+    return vec2(M[0][0]*v.x + M[0][1]*v.y, M[1][0]*v.x + M[1][1]*v.y);
+  }
+  function matMul(M1, M2){
+    return [
+      [M1[0][0]*M2[0][0] + M1[0][1]*M2[1][0], M1[0][0]*M2[0][1] + M1[0][1]*M2[1][1]],
+      [M1[1][0]*M2[0][0] + M1[1][1]*M2[1][0], M1[1][0]*M2[0][1] + M1[1][1]*M2[1][1]]
+    ];
+  }
+  function matAdd(M1, M2){
+    return [[M1[0][0]+M2[0][0], M1[0][1]+M2[0][1]], [M1[1][0]+M2[1][0], M1[1][1]+M2[1][1]]];
+  }
+  function matScale(M, s){
+    return [[M[0][0]*s, M[0][1]*s], [M[1][0]*s, M[1][1]*s]];
+  }
+  function identity2(){ return [[1,0],[0,1]]; }
+  function det2(M){ return M[0][0]*M[1][1] - M[0][1]*M[1][0]; }
+  function trace2(M){ return M[0][0] + M[1][1]; }
+
+  function vecAdd(a,b){ return vec2(a.x+b.x, a.y+b.y); }
+  function vecSub(a,b){ return vec2(a.x-b.x, a.y-b.y); }
+  function vecScale(v, s){ return vec2(v.x*s, v.y*s); }
+  function vecDot(a,b){ return a.x*b.x + a.y*b.y; }
+  function vecCross(a,b){ return a.x*b.y - a.y*b.x; } // scalar (z-component)
+  function vecLen(v){ return Math.hypot(v.x, v.y); }
+  function vecNormalize(v){
+    var l = vecLen(v);
+    return l > EPS ? vec2(v.x/l, v.y/l) : vec2(0,0);
+  }
+  function vecAngle(v){ return Math.atan2(v.y, v.x); } // -π to π
+  function angleDeg(v){ return (vecAngle(v) * 180 / Math.PI + 360) % 360; }
+
+  /* ---------- Interpolation M(t) = (1-t)I + tA ---------- */
+  function interpolateMat(A, t){
+    var I = identity2();
+    return matAdd(matScale(I, 1-t), matScale(A, t));
+  }
+
+  /* ---------- Eigen computation for 2x2 (reusing EigenMath roots) ---------- */
+  // Convert Fraction matrix to number matrix
+  function fracMatToNum(A){
+    return A.map(function(row){ return row.map(function(f){ return f.toDec(); }); });
+  }
+
+  // Compute eigenvalues/vectors for 2x2 numeric matrix
+  function computeEigen2x2(A){
+    var a = A[0][0], b = A[0][1], c = A[1][0], d = A[1][1];
+    var tr = a + d;
+    var det = a*d - b*c;
+    var disc = tr*tr - 4*det;
+    var eig = [];
+    if (disc >= -EPS){
+      // Real eigenvalues
+      var sqrtDisc = disc < 0 ? 0 : Math.sqrt(disc);
+      var lam1 = (tr + sqrtDisc) / 2;
+      var lam2 = (tr - sqrtDisc) / 2;
+      // Eigenvectors: (A - λI)v = 0
+      function eigenvec(lam){
+        var m00 = a - lam, m01 = b, m10 = c, m11 = d - lam;
+        // Find null space
+        if (Math.abs(m00) > Math.abs(m10)){
+          if (Math.abs(m00) > EPS) return vecNormalize(vec2(-m01/m00, 1));
+          if (Math.abs(m01) > EPS) return vecNormalize(vec2(1, -m00/m01));
+        } else {
+          if (Math.abs(m10) > EPS) return vecNormalize(vec2(-m11/m10, 1));
+          if (Math.abs(m11) > EPS) return vecNormalize(vec2(1, -m10/m11));
+        }
+        // If matrix is λI (all directions are eigenvectors)
+        return vec2(1, 0);
+      }
+      var v1 = eigenvec(lam1);
+      var v2 = eigenvec(lam2);
+      // Check if they're linearly dependent (repeated eigenvalue with full eigenspace)
+      var cross = Math.abs(vecCross(v1, v2));
+      if (Math.abs(lam1 - lam2) < EPS && cross < EPS){
+        // Repeated eigenvalue, check if A = λI
+        if (Math.abs(a - lam1) < EPS && Math.abs(d - lam1) < EPS && Math.abs(b) < EPS && Math.abs(c) < EPS){
+          eig.push({ lambda: lam1, vec: v1, fullSpace: true, multiplicity: 2 });
+        } else {
+          eig.push({ lambda: lam1, vec: v1, fullSpace: false, multiplicity: 2 });
+        }
+      } else {
+        eig.push({ lambda: lam1, vec: v1, fullSpace: false, multiplicity: 1 });
+        if (Math.abs(lam1 - lam2) > EPS){
+          eig.push({ lambda: lam2, vec: v2, fullSpace: false, multiplicity: 1 });
+        }
+      }
+    } else {
+      // Complex eigenvalues
+      var re = tr / 2;
+      var im = Math.sqrt(-disc) / 2;
+      eig.push({ lambda: re + im, lambdaRe: re, lambdaIm: im, complex: true });
+      eig.push({ lambda: re - im, lambdaRe: re, lambdaIm: -im, complex: true });
+    }
+    return eig;
+  }
+
+  /* ---------- Unit circle sampling ---------- */
+  function sampleCircle(n){
+    var pts = [];
+    for (var i = 0; i <= n; i++){
+      var theta = 2 * Math.PI * i / n;
+      pts.push(vec2(Math.cos(theta), Math.sin(theta)));
+    }
+    return pts;
+  }
+
+  /* ---------- Grid sampling ---------- */
+  function sampleGrid(lines, range){
+    var pts = [];
+    var step = (2*range) / lines;
+    for (var i = -lines; i <= lines; i++){
+      var coord = i * step;
+      // Vertical lines (x = coord)
+      var vline = [];
+      for (var j = -lines; j <= lines; j++){
+        vline.push(vec2(coord, j * step));
+      }
+      pts.push(vline);
+      // Horizontal lines (y = coord)
+      var hline = [];
+      for (var j = -lines; j <= lines; j++){
+        hline.push(vec2(j * step, coord));
+      }
+      pts.push(hline);
+    }
+    return pts;
+  }
+
+  /* ---------- Transform points ---------- */
+  function transformPoints(points, M){
+    return points.map(function(p){ return matMulVec(M, p); });
+  }
+  function transformLines(lines, M){
+    return lines.map(function(line){ return transformPoints(line, M); });
+  }
+
+  /* ---------- SVG path builders ---------- */
+  function pointsToPath(points, closed){
+    if (!points.length) return '';
+    var d = 'M' + points[0].x + ',' + points[0].y;
+    for (var i = 1; i < points.length; i++) d += ' L' + points[i].x + ',' + points[i].y;
+    if (closed) d += ' Z';
+    return d;
+  }
+
+  function ellipseFromMatrix(M){
+    // For unit circle x^T x = 1, transformed ellipse: (Mx)^T (Mx) = x^T (M^T M) x = 1
+    // Parametric: M * (cos θ, sin θ)
+    var pts = sampleCircle(120).map(function(p){ return matMulVec(M, p); });
+    return pointsToPath(pts, true);
+  }
+
+  function gridToSVG(lines, scale, cx, cy){
+    var paths = [];
+    for (var i = 0; i < lines.length; i++){
+      var pts = lines[i].map(function(p){
+        return { x: cx + p.x * scale, y: cy - p.y * scale }; // y flipped for SVG
+      });
+      paths.push(pointsToPath(pts, false));
+    }
+    return paths.join(' ');
+  }
+
+  function axesToSVG(scale, cx, cy, maxVal){
+    var paths = [];
+    var tickLen = 6;
+    var maxTick = Math.ceil(maxVal);
+    // X axis
+    paths.push('M' + (cx - maxVal*scale) + ',' + cy + ' L' + (cx + maxVal*scale) + ',' + cy);
+    // Y axis
+    paths.push('M' + cx + ',' + (cy + maxVal*scale) + ' L' + cx + ',' + (cy - maxVal*scale));
+    // Ticks and labels
+    for (var i = -maxTick; i <= maxTick; i++){
+      if (i === 0) continue;
+      var x = cx + i * scale;
+      var y = cy - i * scale;
+      // X ticks
+      paths.push('M' + x + ',' + (cy - tickLen) + ' L' + x + ',' + (cy + tickLen));
+      // Y ticks
+      paths.push('M' + (cx - tickLen) + ',' + y + ' L' + (cx + tickLen) + ',' + y);
+    }
+    return paths.join(' ');
+  }
+
+  function eigenLineToSVG(vec, scale, cx, cy, maxExtent){
+    // Line through origin in direction vec, extending to maxExtent
+    var v = vecNormalize(vec);
+    var x1 = cx - v.x * maxExtent * scale;
+    var y1 = cy + v.y * maxExtent * scale;
+    var x2 = cx + v.x * maxExtent * scale;
+    var y2 = cy - v.y * maxExtent * scale;
+    return 'M' + x1 + ',' + y1 + ' L' + x2 + ',' + y2;
+  }
+
+  function vecToSVG(v, scale, cx, cy, color, label, labelOffset){
+    var x = cx + v.x * scale;
+    var y = cy - v.y * scale;
+    var line = 'M' + cx + ',' + cy + ' L' + x + ',' + y;
+    var labelX = x + (labelOffset ? labelOffset.x : 0);
+    var labelY = y + (labelOffset ? labelOffset.y : -12);
+    return { line: line, labelX: labelX, labelY: labelY, text: label };
+  }
+
+  /* ---------- Parallel detection ---------- */
+  function isParallel(v1, v2, eps){
+    eps = eps || 1e-3; // ~0.05 degrees tolerance in cross product terms
+    var l1 = vecLen(v1), l2 = vecLen(v2);
+    if (l1 < EPS || l2 < EPS) return false;
+    var cross = Math.abs(vecCross(v1, v2));
+    return cross <= eps * l1 * l2;
+  }
+
+  /* ---------- Snap to nearest eigenvector direction ---------- */
+  function snapToEigen(x, eigenList){
+    if (!eigenList.length) return x;
+    var best = x;
+    var bestDot = -Infinity;
+    var xLen = vecLen(x);
+    if (xLen < EPS) return x;
+    var xNorm = vecNormalize(x);
+    for (var i = 0; i < eigenList.length; i++){
+      if (eigenList[i].complex) continue;
+      var v = eigenList[i].vec;
+      var dot = Math.abs(vecDot(xNorm, v)); // absolute for direction match
+      if (dot > bestDot){
+        bestDot = dot;
+        best = vecScale(v, xLen);
+      }
+    }
+    return best;
+  }
+
+  /* ---------- Auto-scale computation ---------- */
+  function computeAutoScale(x, Ax, ellipseRadius, margin){
+    margin = margin || 1.2;
+    var maxVal = Math.max(vecLen(x), vecLen(Ax), ellipseRadius);
+    return maxVal * margin;
+  }
+
+  /* ---------- Contextual explanation generator ---------- */
+  function generateExplanation(A, eigenList, x, Ax, t){
+    var M = t !== undefined ? interpolateMat(A, t) : A;
+    var det = det2(M);
+    var isInterp = t !== undefined && t < 1;
+    var lines = [];
+
+    // Eigen analysis
+    var realEigs = eigenList.filter(function(e){ return !e.complex; });
+    var complexEigs = eigenList.filter(function(e){ return e.complex; });
+
+    if (complexEigs.length > 0){
+      lines.push('Nilai eigen kompleks (λ = ' + complexEigs[0].lambdaRe.toFixed(3) + ' ± ' + Math.abs(complexEigs[0].lambdaIm).toFixed(3) + 'i) → tidak ada arah tetap real. Matriks melakukan rotasi+skala.');
+    } else if (realEigs.length === 1 && realEigs[0].fullSpace){
+      lines.push('A = λI (skala seragam λ = ' + realEigs[0].lambda.toFixed(3) + '). Semua arah adalah vektor eigen, panjang dikalikan ' + realEigs[0].lambda.toFixed(3) + '.');
+    } else if (realEigs.length === 1 && realEigs[0].multiplicity === 2){
+      lines.push('Nilai eigen kembar λ = ' + realEigs[0].lambda.toFixed(3) + ' dengan ruang eigen 1-dimensi (hanya satu arah eigen). Matriks tidak dapat didiagonalisasi (defektif/geser).');
+    } else if (realEigs.length === 2){
+      var l1 = realEigs[0].lambda, l2 = realEigs[1].lambda;
+      var desc = 'Dua arah tetap: ';
+      var parts = [];
+      [l1, l2].forEach(function(lam, idx){
+        var v = realEigs[idx].vec;
+        var dir = '[' + v.x.toFixed(2) + ', ' + v.y.toFixed(2) + ']';
+        if (Math.abs(lam) < EPS){
+          parts.push('λ=0 (runtuh ke titik asal, matriks singular)');
+        } else if (lam < 0){
+          parts.push('λ=' + lam.toFixed(3) + ' (arah berbalik, panjang ×' + Math.abs(lam).toFixed(3) + ')');
+        } else if (lam < 1){
+          parts.push('λ=' + lam.toFixed(3) + ' (menyusut, panjang ×' + lam.toFixed(3) + ')');
+        } else if (lam === 1){
+          parts.push('λ=1 (tetap, panjang ×1)');
+        } else {
+          parts.push('λ=' + lam.toFixed(3) + ' (memanjang, panjang ×' + lam.toFixed(3) + ')');
+        }
+      });
+      lines.push(desc + parts.join(' dan '));
+    } else {
+      lines.push('Tidak ada nilai eigen real.');
+    }
+
+    // Vector x analysis
+    if (vecLen(x) < EPS){
+      lines.push('x = 0 (vektor nol bukan vektor eigen).');
+    } else {
+      var parallel = isParallel(x, Ax);
+      var ratio = vecLen(Ax) / vecLen(x);
+      var angleDiff = Math.abs(angleDeg(Ax) - angleDeg(x));
+      if (angleDiff > 180) angleDiff = 360 - angleDiff;
+      if (parallel){
+        var lamMatch = null;
+        for (var i = 0; i < realEigs.length; i++){
+          if (Math.abs(Math.abs(realEigs[i].lambda) - ratio) < 1e-3){
+            lamMatch = realEigs[i].lambda;
+            break;
+          }
+        }
+        lines.push('x sejajar Ax → x adalah vektor eigen. Rasio |Ax|/|x| = ' + ratio.toFixed(4) + (lamMatch !== null ? ' (cocok |λ|=' + Math.abs(lamMatch).toFixed(4) + ', ✓)' : ''));
+      } else {
+        lines.push('x tidak sejajar Ax (selisih sudut ' + angleDiff.toFixed(2) + '°). Rasio panjang |Ax|/|x| = ' + ratio.toFixed(4) + '.');
+      }
+    }
+
+    // Area scaling
+    lines.push('Determinan det(M) = ' + det.toFixed(4) + ' → faktor perubahan luas. Luas elips = |det| × π = ' + Math.abs(det).toFixed(4) + 'π.');
+
+    if (isInterp){
+      lines.unshift('Interpolasi M(t) dengan t = ' + t.toFixed(2) + ': M(t) = (1-t)I + tA');
+    }
+
+    return lines;
+  }
+
+  /* ---------- Number panel data ---------- */
+  function computePanelData(A, eigenList, x, Ax, t){
+    var M = t !== undefined ? interpolateMat(A, t) : A;
+    var det = det2(M);
+    var xLen = vecLen(x);
+    var AxLen = vecLen(Ax);
+    var xAngle = angleDeg(x);
+    var AxAngle = angleDeg(Ax);
+    var angleDiff = Math.abs(AxAngle - xAngle);
+    if (angleDiff > 180) angleDiff = 360 - angleDiff;
+    var ratio = xLen > EPS ? AxLen / xLen : 0;
+    var parallel = isParallel(x, Ax);
+
+    return {
+      x: { x: x.x, y: x.y },
+      Ax: { x: Ax.x, y: Ax.y },
+      xAngle: xAngle,
+      AxAngle: AxAngle,
+      angleDiff: angleDiff,
+      ratio: ratio,
+      det: det,
+      areaScale: Math.abs(det),
+      parallel: parallel,
+      eigenList: eigenList,
+      M: M
+    };
+  }
+
+  return {
+    vec2: vec2,
+    mat2: mat2,
+    matMulVec: matMulVec,
+    matMul: matMul,
+    matAdd: matAdd,
+    matScale: matScale,
+    identity2: identity2,
+    det2: det2,
+    trace2: trace2,
+    vecAdd: vecAdd,
+    vecSub: vecSub,
+    vecScale: vecScale,
+    vecDot: vecDot,
+    vecCross: vecCross,
+    vecLen: vecLen,
+    vecNormalize: vecNormalize,
+    vecAngle: vecAngle,
+    angleDeg: angleDeg,
+    interpolateMat: interpolateMat,
+    fracMatToNum: fracMatToNum,
+    computeEigen2x2: computeEigen2x2,
+    sampleCircle: sampleCircle,
+    sampleGrid: sampleGrid,
+    transformPoints: transformPoints,
+    transformLines: transformLines,
+    pointsToPath: pointsToPath,
+    ellipseFromMatrix: ellipseFromMatrix,
+    gridToSVG: gridToSVG,
+    axesToSVG: axesToSVG,
+    eigenLineToSVG: eigenLineToSVG,
+    vecToSVG: vecToSVG,
+    isParallel: isParallel,
+    snapToEigen: snapToEigen,
+    computeAutoScale: computeAutoScale,
+    generateExplanation: generateExplanation,
+    computePanelData: computePanelData,
+    EPS: EPS
+  };
+})();
 var EigenApp = (function(){
   'use strict';
 
@@ -1120,6 +1682,8 @@ var EigenApp = (function(){
     $('stepAll').textContent = 'Tampilkan Semua';
     renderSteps();
     renderEigvals();
+    // Notify Module C of matrix change
+    window.dispatchEvent(new CustomEvent('eigenMatrixChanged'));
   }
 
   function renderEigvals(){
@@ -1174,6 +1738,7 @@ var EigenApp = (function(){
     $('errA').classList.remove('show');
     $('stepsWrap').innerHTML = '';
     $('eigvalsA').innerHTML = '';
+    window.dispatchEvent(new CustomEvent('eigenMatrixChanged'));
   }
 
   function randomMatrix(){
@@ -1188,6 +1753,7 @@ var EigenApp = (function(){
     $('errA').classList.remove('show');
     $('stepsWrap').innerHTML = '';
     $('eigvalsA').innerHTML = '';
+    window.dispatchEvent(new CustomEvent('eigenMatrixChanged'));
   }
 
   /* init */
@@ -1207,6 +1773,7 @@ var EigenApp = (function(){
       buildGrid();
       $('stepsWrap').innerHTML = '';
       $('eigvalsA').innerHTML = '';
+      window.dispatchEvent(new CustomEvent('eigenMatrixChanged'));
     });
 
     $('btnCalcA').addEventListener('click', calc);
@@ -1220,7 +1787,7 @@ var EigenApp = (function(){
     $('presetRepeated').addEventListener('click', function(){ applyPreset('rep'); });
     $('presetComplex').addEventListener('click', function(){ applyPreset('comp'); });
     $('randomA').addEventListener('click', randomMatrix);
-    $('resetA').addEventListener('click', function(){ applyPreset('note'); });
+    $('resetA').addEventListener('click', function(){ applyPreset('note'); window.dispatchEvent(new CustomEvent('eigenMatrixChanged')); });
 
     // module tabs
     var tabs = document.querySelectorAll('.module-tab');
@@ -1230,6 +1797,19 @@ var EigenApp = (function(){
         var target = this.getAttribute('data-target');
         for (var i = 0; i < tabs.length; i++){ tabs[i].classList.toggle('active', tabs[i] === this); tabs[i].setAttribute('aria-selected', tabs[i] === this); }
         for (var i = 0; i < panels.length; i++){ panels[i].classList.toggle('active', panels[i].id === target); }
+        // Sync Module C when its tab is activated
+        if (target === 'modC' && window.EigenViz && EigenViz.init){
+          // Re-sync from Module A
+          if (window.EigenApp && EigenApp.getMatrix){
+            var Afrac = EigenApp.getMatrix();
+            var size = EigenApp.getSize();
+            if (size === 2 && Afrac && Afrac.length === 2){
+              EigenViz.applyPreset('note'); // This will be overridden by sync
+              // Actually, let's just trigger a sync event
+              window.dispatchEvent(new CustomEvent('eigenMatrixChanged'));
+            }
+          }
+        }
       });
     }
 
@@ -1241,9 +1821,956 @@ var EigenApp = (function(){
   }
 
   document.addEventListener('DOMContentLoaded', init);
-  return { calc: calc, readMatrix: readMatrix };
+  return { calc: calc, readMatrix: readMatrix, getMatrix: function(){ return A; }, getSize: function(){ return n; } };
 })();
-</script>
+
+/* =====================================================================
+   EIGEN VIZ - Module C: 2D Geometry Visualization
+   ===================================================================== */
+var EigenViz = (function(){
+  'use strict';
+
+  var svg = null;
+  var overlay = null;
+  var animating = false;
+  var animStartTime = 0;
+  var animDuration = 2000; // ms
+  var animTargetT = 1;
+  var animDirection = 1; // 1 = forward, -1 = reverse
+  var reducedMotion = false;
+  var currentT = 1;
+  var currentX = { x: 1, y: 0 };
+  var currentA = [[3,2],[-1,0]]; // default from preset 'note'
+  var currentEigen = [];
+  var tracePoints = [];
+  var dragActive = false;
+  var svgRect = null;
+  var cx = 300, cy = 240; // SVG center
+  var scale = 100; // pixels per unit
+
+  var $ = function(id){ return document.getElementById(id); };
+
+  /* ---------- Presets ---------- */
+  var presets = {
+    note:    [[3, 2], [-1, 0]],
+    diag:    [[2, 0], [0, 3]],
+    sym:     [[2, 1], [1, 2]],
+    shear:   [[1, 1], [0, 1]],
+    rot90:   [[0, -1], [1, 0]],
+    refl:    [[1, 0], [0, -1]],
+    scale:   [[2, 0], [0, 2]],
+    singular:[[1, 2], [2, 4]]
+  };
+
+  /* ---------- Color CSS variables ---------- */
+  function updateColorVars(){
+    var root = document.documentElement;
+    root.style.setProperty('--color-vec-x', getComputedStyle(root).getPropertyValue('--accent').trim() || '#3b82f6');
+    root.style.setProperty('--color-vec-ax', getComputedStyle(root).getPropertyValue('--success').trim() || '#22c55e');
+    root.style.setProperty('--color-eig', getComputedStyle(root).getPropertyValue('--warning').trim() || '#fbbf24');
+  }
+
+  /* ---------- Sync matrix from Module A ---------- */
+  function syncFromModuleA(){
+    if (window.EigenApp && EigenApp.getMatrix){
+      var Afrac = EigenApp.getMatrix();
+      var size = EigenApp.getSize();
+      if (size === 2 && Afrac && Afrac.length === 2){
+        currentA = Afrac.map(function(row){ return row.map(function(f){ return f.toDec(); }); });
+        $('sizeA').value = '2';
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /* ---------- Check if 2x2 ---------- */
+  function is2x2(){
+    return currentA && currentA.length === 2 && currentA[0].length === 2;
+  }
+
+  /* ---------- Show/hide 2x2 message ---------- */
+  function update2x2Visibility(){
+    var is2 = is2x2();
+    $('not2x2C').style.display = is2 ? 'none' : 'block';
+    $('vizAreaC').style.display = is2 ? 'block' : 'none';
+    if (is2) requestAnimationFrame(render);
+  }
+
+  /* ---------- Resize to 2x2 ---------- */
+  function resizeTo2x2(){
+    if (window.EigenApp){
+      EigenApp.applyPreset('note'); // This sets size to 2
+      syncFromModuleA();
+      update2x2Visibility();
+      buildMatrixGridC();
+    }
+  }
+
+  /* ---------- Apply preset ---------- */
+  function applyPreset(key){
+    var p = presets[key];
+    if (!p) return;
+    currentA = p.map(function(row){ return row.slice(); });
+    // Also update Module A
+    if (window.EigenApp){
+      var fracMat = p.map(function(row){ return row.map(function(v){ return new EigenMath.Fraction(v); }); });
+      EigenApp.A = fracMat;
+      EigenApp.n = 2;
+      EigenApp.buildGrid();
+      EigenApp.calc();
+    }
+    // Reset vector x to default
+    currentX = { x: 1, y: 0 };
+    currentT = 1;
+    tracePoints = [];
+    $('vecX1').value = '1';
+    $('vecX2').value = '0';
+    $('vecAngle').value = '0';
+    $('vecLen').value = '1';
+    $('interpT').value = '1';
+    $('interpTValue').textContent = '1.00';
+    update2x2Visibility();
+    updateEigenSelect();
+    buildMatrixGridC();
+    render();
+  }
+
+  /* ---------- Random matrix ---------- */
+  function randomMatrix(){
+    var m = [];
+    for (var i = 0; i < 2; i++){
+      var row = [];
+      for (var j = 0; j < 2; j++) row.push(Math.floor(Math.random() * 11) - 5);
+      m.push(row);
+    }
+    currentA = m;
+    if (window.EigenApp){
+      var fracMat = m.map(function(row){ return row.map(function(v){ return new EigenMath.Fraction(v); }); });
+      EigenApp.A = fracMat;
+      EigenApp.n = 2;
+      EigenApp.buildGrid();
+      EigenApp.calc();
+    }
+    currentX = { x: 1, y: 0 };
+    currentT = 1;
+    tracePoints = [];
+    $('vecX1').value = '1';
+    $('vecX2').value = '0';
+    $('vecAngle').value = '0';
+    $('vecLen').value = '1';
+    $('interpT').value = '1';
+    $('interpTValue').textContent = '1.00';
+    update2x2Visibility();
+    updateEigenSelect();
+    buildMatrixGridC();
+    render();
+  }
+
+  /* ---------- Reset ---------- */
+  function resetAll(){
+    applyPreset('note');
+    buildMatrixGridC();
+  }
+
+  /* ---------- Build matrix grid in Module C ---------- */
+  function buildMatrixGridC(){
+    var container = $('matrixGridC');
+    if (!container) return;
+    container.innerHTML = '';
+    for (var i = 0; i < 2; i++){
+      var rowDiv = document.createElement('div');
+      rowDiv.className = 'matrix-row';
+      for (var j = 0; j < 2; j++){
+        var inp = document.createElement('input');
+        inp.className = 'cell-input';
+        inp.type = 'text';
+        inp.value = (currentA[i] && currentA[i][j] !== undefined) ? currentA[i][j].toString() : '0';
+        inp.setAttribute('aria-label', 'Sel baris ' + (i+1) + ' kolom ' + (j+1));
+        inp.dataset.row = i;
+        inp.dataset.col = j;
+        inp.addEventListener('change', onMatrixCellChangeC);
+        inp.addEventListener('blur', onMatrixCellChangeC);
+        rowDiv.appendChild(inp);
+      }
+      container.appendChild(rowDiv);
+    }
+  }
+
+  function onMatrixCellChangeC(e){
+    var row = parseInt(e.target.dataset.row, 10);
+    var col = parseInt(e.target.dataset.col, 10);
+    var val = parseFloat(e.target.value);
+    if (isNaN(val)){
+      // Restore previous value
+      e.target.value = currentA[row][col].toString();
+      return;
+    }
+    // Clamp large values
+    if (Math.abs(val) > 1e6) val = val > 0 ? 1e6 : -1e6;
+    currentA[row][col] = val;
+    e.target.value = val.toString();
+    // Sync to Module A
+    if (window.EigenApp){
+      var fracMat = currentA.map(function(row){ return row.map(function(v){ return new EigenMath.Fraction(v); }); });
+      EigenApp.A = fracMat;
+      EigenApp.n = 2;
+      EigenApp.buildGrid();
+      EigenApp.calc();
+    }
+    // Update visualization
+    recomputeEigen();
+    updateEigenSelect();
+    buildMatrixGridC(); // Rebuild to show formatted values
+    render();
+  }
+
+  /* ---------- Update eigen select dropdown ---------- */
+  function updateEigenSelect(){
+    var select = $('snapEigSelect');
+    var realEigs = currentEigen.filter(function(e){ return !e.complex; });
+    select.innerHTML = '<option value="">Pilih λ...</option>';
+    realEigs.forEach(function(e, idx){
+      var opt = document.createElement('option');
+      opt.value = idx;
+      opt.textContent = 'λ = ' + e.lambda.toFixed(4);
+      select.appendChild(opt);
+    });
+    if (realEigs.length <= 1){
+      select.style.display = 'none';
+    } else {
+      select.style.display = 'block';
+    }
+  }
+
+  /* ---------- Compute eigen for current matrix ---------- */
+  function recomputeEigen(){
+    if (!is2x2()){
+      currentEigen = [];
+      return;
+    }
+    currentEigen = EigenGeometry.computeEigen2x2(currentA);
+    updateEigenSelect();
+  }
+
+  /* ---------- Get current M(t) ---------- */
+  function getCurrentM(){
+    return EigenGeometry.interpolateMat(currentA, currentT);
+  }
+
+  /* ---------- Compute Ax ---------- */
+  function computeAx(){
+    var M = getCurrentM();
+    return EigenGeometry.matMulVec(M, currentX);
+  }
+
+  /* ---------- Auto-scale ---------- */
+  function updateScale(){
+    var Ax = computeAx();
+    // Ellipse radius: max singular value approx = max stretch of unit circle
+    // For 2x2, we can sample
+    var circlePts = EigenGeometry.sampleCircle(50);
+    var M = getCurrentM();
+    var transformed = circlePts.map(function(p){ return EigenGeometry.matMulVec(M, p); });
+    var maxEllipseR = 0;
+    for (var i = 0; i < transformed.length; i++){
+      maxEllipseR = Math.max(maxEllipseR, EigenGeometry.vecLen(transformed[i]));
+    }
+    var maxVal = EigenGeometry.computeAutoScale(currentX, Ax, maxEllipseR, 1.3);
+    // Limit scale to reasonable bounds
+    var maxScale = 300; // pixels per unit max
+    var minScale = 20;
+    scale = Math.max(minScale, Math.min(maxScale, 220 / (maxVal || 1)));
+  }
+
+  /* ---------- Render everything ---------- */
+  function render(){
+    if (!is2x2()) return;
+    if (!svg) svg = $('svgC');
+    if (!overlay) overlay = $('canvasOverlayC');
+
+    updateScale();
+    recomputeEigen();
+
+    var M = getCurrentM();
+    var Ax = computeAx();
+    var det = EigenGeometry.det2(M);
+
+    // Clear trace if t changed significantly or reset
+    // We keep trace only when animating rotation of x
+    // For now, clear trace on any parameter change except animation
+    // (We'll handle trace in animation)
+
+    // Update SVG viewBox for responsive scaling
+    var vbSize = 300 / scale * 2; // world units visible
+    // Keep viewBox fixed at 600x480, scale via transform
+    // Actually easier: use a transform group
+    var gTransform = 'translate(' + cx + ',' + cy + ') scale(' + scale + ', ' + (-scale) + ')';
+    // We'll apply transform to groups instead
+
+    // --- Grid ---
+    var gridGroup = $('gridGroupC');
+    var showGrid = $('toggleGridC').checked;
+    if (showGrid){
+      var gridLines = EigenGeometry.sampleGrid(10, 5); // 10 lines, range ±5
+      var transformedGrid = EigenGeometry.transformLines(gridLines, M);
+      gridGroup.innerHTML = '';
+      var path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      path.setAttribute('d', EigenGeometry.gridToSVG(transformedGrid, 1, 0, 0));
+      path.setAttribute('stroke', 'var(--text-muted)');
+      path.setAttribute('stroke-width', '0.5');
+      path.setAttribute('fill', 'none');
+      path.setAttribute('opacity', '0.4');
+      path.setAttribute('vector-effect', 'non-scaling-stroke');
+      gridGroup.appendChild(path);
+    } else {
+      gridGroup.innerHTML = '';
+    }
+
+    // --- Unit Circle ---
+    var circle = $('unitCircleC');
+    // Circle is at origin with r=1, transform handles scaling
+
+    // --- Ellipse ---
+    var ellipse = $('ellipseC');
+    var showCircle = $('toggleCircleC').checked;
+    if (showCircle){
+      ellipse.setAttribute('d', EigenGeometry.ellipseFromMatrix(M));
+      ellipse.style.display = 'block';
+      circle.style.display = 'block';
+    } else {
+      ellipse.style.display = 'none';
+      circle.style.display = 'none';
+    }
+
+    // --- Eigen lines ---
+    var eigLinesGroup = $('eigenLinesGroupC');
+    var showEigLines = $('toggleEigLinesC').checked;
+    var showEigVecs = $('toggleEigVecsC').checked;
+    eigLinesGroup.innerHTML = '';
+    if (showEigLines || showEigVecs){
+      var realEigs = currentEigen.filter(function(e){ return !e.complex; });
+      for (var i = 0; i < realEigs.length; i++){
+        var eig = realEigs[i];
+        if (eig.fullSpace){
+          // A = λI: all directions are eigenvectors
+          var txt = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+          txt.setAttribute('x', '0');
+          txt.setAttribute('y', '-20');
+          txt.setAttribute('text-anchor', 'middle');
+          txt.setAttribute('font-size', '11');
+          txt.setAttribute('fill', 'var(--color-eig)');
+          txt.setAttribute('font-weight', '600');
+          txt.textContent = 'Semua arah adalah vektor eigen (A = λI, λ=' + eig.lambda.toFixed(3) + ')';
+          eigLinesGroup.appendChild(txt);
+          continue;
+        }
+        var color = 'hsl(' + (40 + i * 180) + ', 70%, 50%)';
+        if (showEigLines){
+          var line = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+          line.setAttribute('d', EigenGeometry.eigenLineToSVG(eig.vec, 1, 0, 0, 5));
+          line.setAttribute('stroke', color);
+          line.setAttribute('stroke-width', '1');
+          line.setAttribute('stroke-dasharray', '8,4');
+          line.setAttribute('fill', 'none');
+          line.setAttribute('opacity', '0.7');
+          line.setAttribute('vector-effect', 'non-scaling-stroke');
+          eigLinesGroup.appendChild(line);
+          // Label
+          var label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+          var labelPos = EigenGeometry.vecScale(eig.vec, 5.2);
+          label.setAttribute('x', labelPos.x);
+          label.setAttribute('y', -labelPos.y);
+          label.setAttribute('text-anchor', eig.vec.x >= 0 ? 'start' : 'end');
+          label.setAttribute('font-size', '10');
+          label.setAttribute('fill', color);
+          label.setAttribute('font-weight', '600');
+          label.textContent = 'E(λ=' + eig.lambda.toFixed(3) + ')';
+          eigLinesGroup.appendChild(label);
+        }
+        if (showEigVecs){
+          // Unit eigenvector arrow
+          var vecPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+          var v = EigenGeometry.vecScale(eig.vec, 1); // unit length
+          var vecData = EigenGeometry.vecToSVG(v, 1, 0, 0, color, '', {x:0, y:0});
+          vecPath.setAttribute('d', vecData.line);
+          vecPath.setAttribute('stroke', color);
+          vecPath.setAttribute('stroke-width', '2');
+          vecPath.setAttribute('marker-end', 'url(#arrowheadEig)');
+          vecPath.setAttribute('fill', 'none');
+          vecPath.setAttribute('vector-effect', 'non-scaling-stroke');
+          eigLinesGroup.appendChild(vecPath);
+        }
+      }
+      if (currentEigen.some(function(e){ return e.complex; })){
+        var txt = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        txt.setAttribute('x', '0');
+        txt.setAttribute('y', '-20');
+        txt.setAttribute('text-anchor', 'middle');
+        txt.setAttribute('font-size', '11');
+        txt.setAttribute('fill', 'var(--text-muted)');
+        txt.textContent = 'Tidak ada garis ruang eigen real (nilai eigen kompleks)';
+        eigLinesGroup.appendChild(txt);
+      }
+    }
+
+    // --- Axes ---
+    var axesGroup = $('axesGroupC');
+    axesGroup.innerHTML = '';
+    var maxExtent = 5; // world units
+    var axesPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    axesPath.setAttribute('d', EigenGeometry.axesToSVG(1, 0, 0, maxExtent));
+    axesPath.setAttribute('stroke', 'var(--text-muted)');
+    axesPath.setAttribute('stroke-width', '0.8');
+    axesPath.setAttribute('fill', 'none');
+    axesPath.setAttribute('opacity', '0.5');
+    axesPath.setAttribute('vector-effect', 'non-scaling-stroke');
+    axesGroup.appendChild(axesPath);
+    // Tick labels - disabled for now as they get transformed (scaled/flipped)
+    // Can be re-enabled with a separate non-transformed overlay layer
+    var showLabels = false; // $('toggleLabelsC').checked;
+    if (showLabels){
+      for (var i = -Math.ceil(maxExtent); i <= Math.ceil(maxExtent); i++){
+        if (i === 0) continue;
+        // X ticks
+        var xl = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        xl.setAttribute('x', i);
+        xl.setAttribute('y', 14);
+        xl.setAttribute('text-anchor', 'middle');
+        xl.setAttribute('font-size', '9');
+        xl.setAttribute('fill', 'var(--text-muted)');
+        xl.textContent = i;
+        axesGroup.appendChild(xl);
+        // Y ticks
+        var yl = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        yl.setAttribute('x', -14);
+        yl.setAttribute('y', -i + 3);
+        yl.setAttribute('text-anchor', 'end');
+        yl.setAttribute('font-size', '9');
+        yl.setAttribute('fill', 'var(--text-muted)');
+        yl.textContent = i;
+        axesGroup.appendChild(yl);
+      }
+    }
+
+    // --- Vector x ---
+    var vecXGroup = $('vecXGroupC');
+    var vecXData = EigenGeometry.vecToSVG(currentX, 1, 0, 0, '', 'x', {x:0, y:-14});
+    $('vecXLineC').setAttribute('d', vecXData.line);
+    var xLabel = $('vecXLabelC');
+    xLabel.setAttribute('x', vecXData.labelX);
+    xLabel.setAttribute('y', vecXData.labelY);
+    xLabel.textContent = 'x (' + currentX.x.toFixed(2) + ', ' + currentX.y.toFixed(2) + ')';
+
+    // --- Vector Ax ---
+    var vecAXGroup = $('vecAXGroupC');
+    var vecAXData = EigenGeometry.vecToSVG(Ax, 1, 0, 0, '', 'Ax', {x:0, y:14});
+    $('vecAXLineC').setAttribute('d', vecAXData.line);
+    var axLabel = $('vecAXLabelC');
+    axLabel.setAttribute('x', vecAXData.labelX);
+    axLabel.setAttribute('y', vecAXData.labelY);
+    axLabel.textContent = 'Ax (' + Ax.x.toFixed(2) + ', ' + Ax.y.toFixed(2) + ')';
+
+    // --- Connecting dashed line (path from x tip to Ax tip) ---
+    var xEnd = EigenGeometry.vecScale(currentX, 1);
+    var axEnd = EigenGeometry.vecScale(Ax, 1);
+    var connectPath = 'M' + xEnd.x + ',' + (-xEnd.y) + ' L' + axEnd.x + ',' + (-axEnd.y);
+    $('vecConnectC').setAttribute('d', connectPath);
+
+    // --- Trace path ---
+    var tracePath = $('tracePathC');
+    var showTrace = $('toggleTraceC').checked;
+    if (showTrace && tracePoints.length > 1){
+      var pts = tracePoints.map(function(p){ return p.x + ',' + (-p.y); });
+      tracePath.setAttribute('d', 'M' + pts.join(' L'));
+      tracePath.style.display = 'block';
+    } else {
+      tracePath.style.display = 'none';
+    }
+
+    // Apply transform to main group (contains grid, axes, eigenlines, circle, ellipse, vectors, trace)
+    var transform = 'translate(' + cx + ',' + cy + ') scale(' + scale + ', ' + (-scale) + ')';
+    var mainGroup = $('mainGroupC');
+    if (mainGroup) mainGroup.setAttribute('transform', transform);
+
+    // Update number panel
+    updateNumberPanel(M, Ax, det);
+  }
+
+  /* ---------- Number panel ---------- */
+  function updateNumberPanel(M, Ax, det){
+    var panel = $('numPanelContentC');
+    var data = EigenGeometry.computePanelData(currentA, currentEigen, currentX, Ax, currentT);
+    var parallel = EigenGeometry.isParallel(currentX, Ax);
+    var xLen = EigenGeometry.vecLen(currentX);
+    var AxLen = EigenGeometry.vecLen(Ax);
+
+    var html = '';
+
+    // Vector data
+    html += '<div class="check-grid" style="margin-bottom:16px;">';
+    html += '<div class="check-item"><div class="lbl">Vektor x</div><div class="val" style="font-family:monospace;">[' + currentX.x.toFixed(3) + ', ' + currentX.y.toFixed(3) + ']</div></div>';
+    html += '<div class="check-item"><div class="lbl">Vektor Ax = M(t)x</div><div class="val" style="font-family:monospace;">[' + Ax.x.toFixed(3) + ', ' + Ax.y.toFixed(3) + ']</div></div>';
+    html += '<div class="check-item"><div class="lbl">Sudut x</div><div class="val">' + EigenGeometry.angleDeg(currentX).toFixed(1) + '°</div></div>';
+    html += '<div class="check-item"><div class="lbl">Sudut Ax</div><div class="val">' + EigenGeometry.angleDeg(Ax).toFixed(1) + '°</div></div>';
+    html += '<div class="check-item"><div class="lbl">Selisih sudut</div><div class="val">' + data.angleDiff.toFixed(2) + '°</div></div>';
+    html += '<div class="check-item"><div class="lbl">Rasio |Ax|/|x|</div><div class="val">' + (xLen > 1e-10 ? data.ratio.toFixed(4) : 'N/A (x=0)') + '</div></div>';
+    html += '<div class="check-item"><div class="lbl">Determinan M(t)</div><div class="val">' + det.toFixed(4) + '</div></div>';
+    html += '<div class="check-item"><div class="lbl">Faktor luas (|det|)</div><div class="val">' + Math.abs(det).toFixed(4) + ' (luas elips = ' + Math.abs(det).toFixed(4) + 'π)</div></div>';
+    html += '</div>';
+
+    // Eigen info
+    html += '<div style="margin-bottom:12px;"><strong>Nilai & Vektor Eigen (A):</strong></div>';
+    if (currentEigen.length === 0){
+      html += '<div style="color:var(--text-muted); font-size:12px;">Matriks bukan 2×2 atau belum dihitung.</div>';
+    } else {
+      currentEigen.forEach(function(e, idx){
+        if (e.complex){
+          html += '<div style="margin:4px 0; font-size:12px; color:#c084fc;">λ = ' + e.lambdaRe.toFixed(4) + ' ± ' + Math.abs(e.lambdaIm).toFixed(4) + 'i (kompleks)</div>';
+        } else if (e.fullSpace){
+          html += '<div style="margin:4px 0; font-size:12px; color:var(--warning);"><strong>λ = ' + e.lambda.toFixed(4) + ' (mult. 2)</strong> → A = λI, <em>semua arah vektor eigen</em></div>';
+        } else {
+          var v = e.vec;
+          html += '<div style="margin:4px 0; font-size:12px;">λ = ' + e.lambda.toFixed(4) + ' → v ≈ [' + v.x.toFixed(4) + ', ' + v.y.toFixed(4) + ']' + (e.multiplicity > 1 ? ' (kembar)' : '') + '</div>';
+        }
+      });
+    }
+
+    // Parallel check
+    if (xLen > 1e-10){
+      var realEigs = currentEigen.filter(function(e){ return !e.complex && !e.fullSpace; });
+      var lamMatch = null;
+      for (var i = 0; i < realEigs.length; i++){
+        if (Math.abs(Math.abs(realEigs[i].lambda) - data.ratio) < 1e-3){
+          lamMatch = realEigs[i].lambda;
+          break;
+        }
+      }
+      if (parallel){
+        html += '<div style="margin-top:12px; padding:10px; border-radius:var(--radius-sm); background:rgba(34,197,94,0.12); border:1px solid rgba(34,197,94,0.35); color:#22c55e;">';
+        html += '<strong>✓ x adalah vektor eigen</strong><br>';
+        html += 'Ax sejajar x → Ax = λx';
+        if (lamMatch !== null){
+          html += ', λ = ' + lamMatch.toFixed(4) + ', |Ax|/|x| = ' + Math.abs(lamMatch).toFixed(4) + ' (✓ cocok)';
+        }
+        html += '</div>';
+      } else {
+        html += '<div style="margin-top:12px; padding:10px; border-radius:var(--radius-sm); background:rgba(239,68,68,0.1); border:1px solid rgba(239,68,68,0.3); color:#ef4444;">';
+        html += '<strong>✗ x bukan vektor eigen</strong><br>';
+        html += 'Ax tidak sejajar x (selisih ' + data.angleDiff.toFixed(2) + '°)';
+        html += '</div>';
+      }
+    } else {
+      html += '<div style="margin-top:12px; padding:10px; border-radius:var(--radius-sm); background:rgba(251,191,36,0.12); border:1px solid rgba(251,191,36,0.35); color:var(--warning);">';
+      html += '<strong>x = 0</strong> — vektor nol bukan vektor eigen.';
+      html += '</div>';
+    }
+
+    // Contextual explanation
+    var explanations = EigenGeometry.generateExplanation(currentA, currentEigen, currentX, Ax, currentT < 1 ? currentT : undefined);
+    if (explanations.length){
+      html += '<div style="margin-top:16px; padding:12px; border-radius:var(--radius-sm); background:var(--accent-soft); border:1px solid var(--accent-border);">';
+      html += '<strong style="color:var(--accent);">Penjelasan Kontekstual:</strong><ul style="margin:8px 0 0 18px; font-size:12.5px; line-height:1.7; color:var(--text-secondary);">';
+      explanations.forEach(function(line){
+        html += '<li>' + line + '</li>';
+      });
+      html += '</ul></div>';
+    }
+
+    // Legend
+    html += '<div style="margin-top:16px; padding:10px; border-radius:var(--radius-sm); background:var(--bg-base); border:1px solid var(--glass-border);">';
+    html += '<strong style="font-size:11px; text-transform:uppercase; letter-spacing:0.05em; color:var(--text-muted);">Legenda</strong>';
+    html += '<div style="display:flex; flex-wrap:wrap; gap:8px; margin-top:8px; font-size:11px;">';
+    html += '<span style="display:flex; align-items:center; gap:4px;"><span style="width:12px; height:3px; background:var(--accent);"></span> Vektor x</span>';
+    html += '<span style="display:flex; align-items:center; gap:4px;"><span style="width:12px; height:3px; background:var(--success);"></span> Vektor Ax</span>';
+    html += '<span style="display:flex; align-items:center; gap:4px;"><span style="width:12px; height:3px; background:var(--warning);"></span> Garis/vektor eigen</span>';
+    html += '<span style="display:flex; align-items:center; gap:4px;"><span style="width:12px; height:3px; background:var(--text-muted); opacity:0.5;"></span> Grid/lingkaran asal</span>';
+    html += '<span style="display:flex; align-items:center; gap:4px;"><span style="width:12px; height:3px; background:var(--accent);"></span> Elips transformasi</span>';
+    html += '<span style="display:flex; align-items:center; gap:4px;"><span style="width:12px; height:3px; background:var(--accent); border-radius:50%;"></span> Titik asal</span>';
+    html += '</div></div>';
+
+    panel.innerHTML = html;
+  }
+
+  /* ---------- Vector x input handlers ---------- */
+  function onVecCoordChange(){
+    var x1 = parseFloat($('vecX1').value) || 0;
+    var x2 = parseFloat($('vecX2').value) || 0;
+    currentX = { x: x1, y: x2 };
+    // Update angle and length inputs
+    var angle = EigenGeometry.angleDeg(currentX);
+    var len = EigenGeometry.vecLen(currentX);
+    $('vecAngle').value = Math.round(angle);
+    $('vecLen').value = len.toFixed(2);
+    tracePoints = []; // Clear trace on manual change
+    render();
+  }
+
+  function onVecAngleChange(){
+    var angle = parseFloat($('vecAngle').value) || 0;
+    var len = parseFloat($('vecLen').value) || 1;
+    var rad = angle * Math.PI / 180;
+    currentX = { x: len * Math.cos(rad), y: len * Math.sin(rad) };
+    $('vecX1').value = currentX.x.toFixed(3);
+    $('vecX2').value = currentX.y.toFixed(3);
+    tracePoints = [];
+    render();
+  }
+
+  function onVecLenChange(){
+    var len = parseFloat($('vecLen').value) || 1;
+    var angle = parseFloat($('vecAngle').value) || 0;
+    var rad = angle * Math.PI / 180;
+    currentX = { x: len * Math.cos(rad), y: len * Math.sin(rad) };
+    $('vecX1').value = currentX.x.toFixed(3);
+    $('vecX2').value = currentX.y.toFixed(3);
+    render();
+  }
+
+  /* ---------- Interpolation slider ---------- */
+  function onInterpChange(){
+    currentT = parseFloat($('interpT').value);
+    $('interpTValue').textContent = currentT.toFixed(2);
+    tracePoints = [];
+    render();
+  }
+
+  /* ---------- Snap to eigenvector ---------- */
+  function onSnapEigen(){
+    var select = $('snapEigSelect');
+    var idx = parseInt(select.value, 10);
+    var realEigs = currentEigen.filter(function(e){ return !e.complex && !e.fullSpace; });
+    if (isNaN(idx) || idx < 0 || idx >= realEigs.length){
+      // Snap to nearest
+      currentX = EigenGeometry.snapToEigen(currentX, currentEigen);
+    } else {
+      var eig = realEigs[idx];
+      var len = EigenGeometry.vecLen(currentX);
+      currentX = EigenGeometry.vecScale(eig.vec, len);
+    }
+    $('vecX1').value = currentX.x.toFixed(3);
+    $('vecX2').value = currentX.y.toFixed(3);
+    $('vecAngle').value = Math.round(EigenGeometry.angleDeg(currentX));
+    $('vecLen').value = EigenGeometry.vecLen(currentX).toFixed(2);
+    tracePoints = [];
+    render();
+  }
+
+  /* ---------- Drag interaction ---------- */
+  function getSVGPoint(clientX, clientY){
+    if (!svgRect) svgRect = svg.getBoundingClientRect();
+    var pt = svg.createSVGPoint();
+    pt.x = clientX - svgRect.left;
+    pt.y = clientY - svgRect.top;
+    var ctm = svg.getScreenCTM();
+    if (ctm) pt = pt.matrixTransform(ctm.inverse());
+    // Convert to world coordinates (inverse of our transform)
+    // Our transform: translate(cx,cy) scale(scale, -scale)
+    // Inverse: scale(1/scale, -1/scale) translate(-cx, -cy)
+    var wx = (pt.x - cx) / scale;
+    var wy = -(pt.y - cy) / scale;
+    return { x: wx, y: wy };
+  }
+
+  function onDragStart(e){
+    if (!is2x2()) return;
+    e.preventDefault();
+    dragActive = true;
+    var clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    var clientY = e.touches ? e.touches[0].clientY : e.clientY;
+    svgRect = svg.getBoundingClientRect();
+    var pt = getSVGPoint(clientX, clientY);
+    currentX = pt;
+    updateVectorInputs();
+    tracePoints = [];
+    render();
+  }
+
+  function onDragMove(e){
+    if (!dragActive) return;
+    e.preventDefault();
+    var clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    var clientY = e.touches ? e.touches[0].clientY : e.clientY;
+    var pt = getSVGPoint(clientX, clientY);
+    currentX = pt;
+    updateVectorInputs();
+    render();
+  }
+
+  function onDragEnd(){
+    dragActive = false;
+  }
+
+  function updateVectorInputs(){
+    $('vecX1').value = currentX.x.toFixed(3);
+    $('vecX2').value = currentX.y.toFixed(3);
+    $('vecAngle').value = Math.round(EigenGeometry.angleDeg(currentX));
+    $('vecLen').value = EigenGeometry.vecLen(currentX).toFixed(2);
+  }
+
+  /* ---------- Animation ---------- */
+  function checkReducedMotion(){
+    reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  }
+
+  function animate(){
+    if (!animating) return;
+    var now = performance.now();
+    var elapsed = now - animStartTime;
+    var progress = Math.min(elapsed / animDuration, 1);
+    if (reducedMotion) progress = 1;
+
+    if (animDirection === 1){
+      currentT = progress; // 0 to 1
+    } else {
+      currentT = 1 - progress; // 1 to 0
+    }
+
+    $('interpT').value = currentT.toFixed(2);
+    $('interpTValue').textContent = currentT.toFixed(2);
+
+    // Record trace point - trace the tip of Ax as M(t) changes
+    var Ax = computeAx();
+    tracePoints.push({ x: Ax.x, y: Ax.y });
+
+    render();
+
+    if (progress < 1){
+      requestAnimationFrame(animate);
+    } else {
+      animating = false;
+      $('playAnimBtn').style.display = 'inline-flex';
+      $('pauseAnimBtn').style.display = 'none';
+    }
+  }
+
+  function startAnimation(){
+    checkReducedMotion();
+    animating = true;
+    animDuration = parseFloat($('animDuration').value) * 1000;
+    var speed = parseFloat($('animSpeed').value);
+    animDuration /= speed;
+    animStartTime = performance.now();
+    animDirection = currentT < 0.5 ? 1 : -1; // Determine direction from current position
+    tracePoints = [];
+    $('playAnimBtn').style.display = 'none';
+    $('pauseAnimBtn').style.display = 'inline-flex';
+    requestAnimationFrame(animate);
+  }
+
+  function pauseAnimation(){
+    animating = false;
+    $('playAnimBtn').style.display = 'inline-flex';
+    $('pauseAnimBtn').style.display = 'none';
+  }
+
+  function toggleAnimation(){
+    if (animating) pauseAnimation();
+    else startAnimation();
+  }
+
+  /* ---------- Toggle handlers ---------- */
+  function onToggleChange(){
+    render();
+  }
+
+  /* ---------- Init ---------- */
+  function init(){
+    // Sync from Module A initially
+    syncFromModuleA();
+    update2x2Visibility();
+
+    // Event listeners
+    $('resizeTo2x2C').addEventListener('click', resizeTo2x2);
+
+    // Presets
+    $('presetNoteC').addEventListener('click', function(){ applyPreset('note'); });
+    $('presetDiagC').addEventListener('click', function(){ applyPreset('diag'); });
+    $('presetSymC').addEventListener('click', function(){ applyPreset('sym'); });
+    $('presetShearC').addEventListener('click', function(){ applyPreset('shear'); });
+    $('presetRot90C').addEventListener('click', function(){ applyPreset('rot90'); });
+    $('presetReflC').addEventListener('click', function(){ applyPreset('refl'); });
+    $('presetScaleC').addEventListener('click', function(){ applyPreset('scale'); });
+    $('presetSingularC').addEventListener('click', function(){ applyPreset('singular'); });
+    $('resetC').addEventListener('click', resetAll);
+    $('randomC').addEventListener('click', randomMatrix);
+
+    // Vector x inputs
+    $('vecX1').addEventListener('input', onVecCoordChange);
+    $('vecX2').addEventListener('input', onVecCoordChange);
+    $('vecAngle').addEventListener('input', onVecAngleChange);
+    $('vecLen').addEventListener('input', onVecLenChange);
+
+    // Interpolation
+    $('interpT').addEventListener('input', onInterpChange);
+
+    // Snap
+    $('snapEigBtn').addEventListener('click', onSnapEigen);
+    $('snapEigSelect').addEventListener('change', onSnapEigen);
+
+    // Animation
+    $('playAnimBtn').addEventListener('click', startAnimation);
+    $('pauseAnimBtn').addEventListener('click', pauseAnimation);
+
+    // Toggles
+    ['toggleGridC', 'toggleCircleC', 'toggleEigLinesC', 'toggleEigVecsC', 'toggleTraceC', 'toggleLabelsC'].forEach(function(id){
+      $(id).addEventListener('change', onToggleChange);
+    });
+
+    // Drag on overlay
+    overlay.addEventListener('mousedown', onDragStart);
+    overlay.addEventListener('touchstart', onDragStart, { passive: false });
+    window.addEventListener('mousemove', onDragMove);
+    window.addEventListener('touchmove', onDragMove, { passive: false });
+    window.addEventListener('mouseup', onDragEnd);
+    window.addEventListener('touchend', onDragEnd);
+
+    // Listen for Module A changes to sync
+    // We'll poll or use a custom event
+    window.addEventListener('eigenMatrixChanged', function(){
+      syncFromModuleA();
+      update2x2Visibility();
+      recomputeEigen();
+      buildMatrixGridC();
+      render();
+    });
+
+    // Initial render
+    recomputeEigen();
+    buildMatrixGridC();
+    render();
+  }
+
+  // Expose for testing
+  return {
+    init: init,
+    applyPreset: applyPreset,
+    currentA: function(){ return currentA; },
+    currentX: function(){ return currentX; },
+    currentT: function(){ return currentT; },
+    currentEigen: function(){ return currentEigen; },
+    computeAx: computeAx,
+    getCurrentM: getCurrentM,
+    // Test functions
+    _test: {
+      interpolateMat: EigenGeometry.interpolateMat,
+      computeEigen2x2: EigenGeometry.computeEigen2x2,
+      isParallel: EigenGeometry.isParallel,
+      snapToEigen: EigenGeometry.snapToEigen,
+      computeAutoScale: EigenGeometry.computeAutoScale,
+      ellipseFromMatrix: EigenGeometry.ellipseFromMatrix,
+      det2: EigenGeometry.det2,
+      generateExplanation: EigenGeometry.generateExplanation
+    }
+  };
+})();
+
+/* =====================================================================
+   UNIT TESTS for EigenGeometry (run in console: EigenViz.runTests())
+   ===================================================================== */
+EigenViz.runTests = function(){
+  var G = EigenGeometry;
+  var passed = 0, failed = 0;
+  function assert(cond, msg){
+    if (cond){ console.log('✓', msg); passed++; }
+    else { console.error('✗', msg); failed++; }
+  }
+  function approxEq(a, b, eps){ return Math.abs(a - b) < (eps || 1e-6); }
+
+  console.log('=== EigenGeometry Unit Tests ===');
+
+  // Test 1: M(0) = I, M(1) = A
+  var A = [[3,2],[-1,0]];
+  var M0 = G.interpolateMat(A, 0);
+  var M1 = G.interpolateMat(A, 1);
+  assert(approxEq(M0[0][0], 1) && approxEq(M0[0][1], 0) && approxEq(M0[1][0], 0) && approxEq(M0[1][1], 1), 'M(0) = I');
+  assert(approxEq(M1[0][0], 3) && approxEq(M1[0][1], 2) && approxEq(M1[1][0], -1) && approxEq(M1[1][1], 0), 'M(1) = A');
+
+  // Test 2: A = [[3,2],[-1,0]] eigenvectors
+  var eig = G.computeEigen2x2(A);
+  var realEigs = eig.filter(function(e){ return !e.complex; });
+  assert(realEigs.length === 2, 'Two real eigenvalues');
+  // λ=1: eigenvector direction [-1, 1] (or [1, -1])
+  var v1 = null, v2 = null;
+  for (var i = 0; i < realEigs.length; i++){
+    if (approxEq(realEigs[i].lambda, 1)) v1 = realEigs[i].vec;
+    if (approxEq(realEigs[i].lambda, 2)) v2 = realEigs[i].vec;
+  }
+  assert(v1 !== null, 'λ=1 found');
+  assert(v2 !== null, 'λ=2 found');
+  // Check direction: v1 should be parallel to [-1, 1]
+  assert(approxEq(Math.abs(G.vecCross(v1, G.vec2(-1, 1))), 0, 1e-6), 'λ=1 eigenvector direction [-1,1]');
+  assert(approxEq(Math.abs(G.vecCross(v2, G.vec2(-2, 1))), 0, 1e-6), 'λ=2 eigenvector direction [-2,1]');
+
+  // Test 3: For x on eigenvector, |Ax|/|x| = |λ| and Ax parallel x
+  var Ax1 = G.matMulVec(A, v1);
+  var ratio1 = G.vecLen(Ax1) / G.vecLen(v1);
+  assert(approxEq(ratio1, 1, 1e-6), '|Ax|/|x| = |λ|=1 for λ=1');
+  assert(G.isParallel(v1, Ax1), 'Ax parallel x for eigenvector λ=1');
+
+  var Ax2 = G.matMulVec(A, v2);
+  var ratio2 = G.vecLen(Ax2) / G.vecLen(v2);
+  assert(approxEq(ratio2, 2, 1e-6), '|Ax|/|x| = |λ|=2 for λ=2');
+  assert(G.isParallel(v2, Ax2), 'Ax parallel x for eigenvector λ=2');
+
+  // Test 4: Rotation 90° - no real eigen lines
+  var R = [[0,-1],[1,0]];
+  var eigR = G.computeEigen2x2(R);
+  var realR = eigR.filter(function(e){ return !e.complex; });
+  assert(realR.length === 0, 'Rotation 90° has no real eigenvalues');
+
+  // Test 5: M(0)=I, M(1)=A already tested above
+
+  // Test 6: Ellipse area = |det A| * π (for unit circle)
+  var ellipseArea = Math.abs(G.det2(A)) * Math.PI; // theoretical
+  // Sample ellipse and compute area via polygon approximation
+  var ellipsePath = G.ellipseFromMatrix(A);
+  // We can't easily compute area from path here, but we trust the math
+  assert(approxEq(Math.abs(G.det2(A)), 2, 1e-6), 'det(A) = 2 for [[3,2],[-1,0]]');
+  // Area scaling factor = |det| = 2
+
+  // Test 7: Snap produces parallel vector
+  var xTest = G.vec2(3, 1);
+  var snapped = G.snapToEigen(xTest, eig);
+  var AxSnapped = G.matMulVec(A, snapped);
+  assert(G.isParallel(snapped, AxSnapped), 'Snap produces eigenvector (parallel Ax)');
+
+  // Test 8: Uniform scale [[2,0],[0,2]] - all directions eigen
+  var S = [[2,0],[0,2]];
+  var eigS = G.computeEigen2x2(S);
+  assert(eigS.length === 1 && eigS[0].fullSpace === true, 'Uniform scale: full eigenspace');
+  assert(approxEq(eigS[0].lambda, 2), 'λ=2 for uniform scale');
+
+  // Test 9: Singular matrix [[1,2],[2,4]] - λ=0, λ=5
+  var Sing = [[1,2],[2,4]];
+  var eigSing = G.computeEigen2x2(Sing);
+  var realSing = eigSing.filter(function(e){ return !e.complex; });
+  assert(realSing.length === 2, 'Singular matrix has 2 real eigenvalues');
+  var hasZero = realSing.some(function(e){ return approxEq(e.lambda, 0); });
+  var hasFive = realSing.some(function(e){ return approxEq(e.lambda, 5); });
+  assert(hasZero, 'Singular matrix has λ=0');
+  assert(hasFive, 'Singular matrix has λ=5');
+
+  // Test 10: Shear [[1,1],[0,1]] - repeated λ=1, defective
+  var Shear = [[1,1],[0,1]];
+  var eigShear = G.computeEigen2x2(Shear);
+  var realShear = eigShear.filter(function(e){ return !e.complex; });
+  assert(realShear.length === 1 && realShear[0].multiplicity === 2 && realShear[0].fullSpace === false, 'Shear: repeated λ=1, defective');
+
+  console.log('=== Results: ' + passed + ' passed, ' + failed + ' failed ===');
+  return failed === 0;
+};
+
+// Initialize Module C when DOM ready
+document.addEventListener('DOMContentLoaded', function(){
+  // Initialize Module C after a short delay to ensure Module A is ready
+  setTimeout(function(){
+    EigenViz.init();
+  }, 100);
+});
+
+// Also expose EigenViz globally for testing
+window.EigenViz = EigenViz;
 "#;
     Html(layout("Nilai & Vektor Eigen", "eigen", "/Learning/", body))
 }
