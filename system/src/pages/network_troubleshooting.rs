@@ -669,17 +669,19 @@ pub fn troubleshooting_html() -> String {
     }
   }
 
-  function tsOnResize() {
-    if (!tsRenderer) return;
+  function tsResize3D() {
+    if (!tsRenderer || !tsCamera || !tsScene) return;
     var host = $('tsScene3d');
     if (!host.clientWidth) return;
     tsCamera.aspect = host.clientWidth / host.clientHeight;
     tsCamera.updateProjectionMatrix();
     tsRenderer.setSize(host.clientWidth, host.clientHeight);
   }
+  function tsOnResize() { tsResize3D(); }
 
   function tsAnimate() {
     tsRaf = requestAnimationFrame(tsAnimate);
+    tsResize3D();
     if (!tsAnimPlaying || tsReduced) {
       if (tsControls && typeof tsControls.update === 'function') tsControls.update();
       if (tsRenderer && tsScene && tsCamera) tsRenderer.render(tsScene, tsCamera);
@@ -848,8 +850,18 @@ pub fn troubleshooting_html() -> String {
     $('tsLabelLayer').classList.toggle('scene-hidden', v === 'table');
     $('tsTableWrap').style.display = v === 'table' ? 'block' : 'none';
     if (v === '2d' && state.lastResults) render2DScene(state.lastResults);
-    if (v === '3d' && state.lastResults && !tsTHREE) {
-      tsLoadThree().then(function () { tsInit3D(); tsBuildScene(state.lastResults); tsAnimate(); });
+    if (v === '3d') {
+      if (!tsScene) {
+        tsLoadThree().then(function () {
+          tsInit3D();
+          if (state.lastResults) tsBuildScene(state.lastResults);
+          tsResize3D();
+          if (!tsRaf) tsAnimate();
+        });
+      } else {
+        tsResize3D();
+        if (state.lastResults) tsBuildScene(state.lastResults);
+      }
     }
   }
 

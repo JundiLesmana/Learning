@@ -1184,14 +1184,15 @@ pub fn defense_html() -> String {
     defHumanMeshes.user = user;
   }
 
-  function defOnResize() {
-    if (!defRenderer) return;
+  function defResize3D() {
+    if (!defRenderer || !defCamera || !defScene) return;
     var host = $('defScene3d');
     if (!host.clientWidth) return;
     defCamera.aspect = host.clientWidth / host.clientHeight;
     defCamera.updateProjectionMatrix();
     defRenderer.setSize(host.clientWidth, host.clientHeight);
   }
+  function defOnResize() { defResize3D(); }
 
   function defOnPointerDown(evt) {
     var rect = defRenderer.domElement.getBoundingClientRect();
@@ -1244,6 +1245,7 @@ pub fn defense_html() -> String {
 
   function defAnimate() {
     defRaf = requestAnimationFrame(defAnimate);
+    defResize3D();
     if (!defAnimPlaying || defReduced) {
       if (defControls && typeof defControls.update === 'function') defControls.update();
       if (defRenderer && defScene && defCamera) defRenderer.render(defScene, defCamera);
@@ -1449,8 +1451,18 @@ pub fn defense_html() -> String {
     $('defLabelLayer').classList.toggle('scene-hidden', v === 'table');
     $('defTableWrap').style.display = v === 'table' ? 'block' : 'none';
     if (v === '2d' && state.lastResults) render2DScene(state.lastResults);
-    if (v === '3d' && state.lastResults && !defTHREE) {
-      defLoadThree().then(function () { defInit3D(); defBuildScene(state.lastResults); defAnimate(); });
+    if (v === '3d') {
+      if (!defScene) {
+        defLoadThree().then(function () {
+          defInit3D();
+          if (state.lastResults) defBuildScene(state.lastResults);
+          defResize3D();
+          if (!defRaf) defAnimate();
+        });
+      } else {
+        defResize3D();
+        if (state.lastResults) defBuildScene(state.lastResults);
+      }
     }
   }
 
