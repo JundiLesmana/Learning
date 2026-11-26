@@ -367,6 +367,7 @@ pub fn troubleshooting_html() -> String {
     ctx.cpuErrorAfterChange = ctx.recentChange && (ctx.cpuHigh || hasCrc); ctx.noChange = !(changes.config || changes.firmware || changes.newdevice || changes.cable || changes.backup);
     ctx.internetOnly = input.coverage === 'internet'; ctx.bothCoverage = input.coverage === 'both'; ctx.internalOnly = input.coverage === 'internal';
     ctx.limitedScope = input.scope === 'device' || input.scope === 'segment'; ctx.segmentWide = input.scope === 'all' || input.scope === 'segment';
+    ctx.scope = input.scope;
     ctx.trace = parseTraceroute(input.traceroute);
     ctx.latencyAllHigh = ctx.trace && ctx.trace.hops.length >= 2 && ctx.trace.hops.every(function (h) { return h.latency && h.latency > 50; });
     ctx.latencyAtHop = ctx.trace && ctx.trace.problemHop !== null; ctx.latencyOtherHigh = ctx.trace && ctx.trace.problemHop !== null && ctx.trace.problemHop > 1;
@@ -831,6 +832,13 @@ pub fn troubleshooting_html() -> String {
     $('tsAnimPause').style.display = 'inline-flex';
     $('tsAnimRestart').style.display = 'inline-flex';
     $('tsSpeedWrap').style.display = 'flex';
+  }
+
+  function render3DScene(results) {
+    if (!tsScene) return;
+    tsBuildScene(results);
+    tsResize3D();
+    if (!tsRaf) tsAnimate();
   }
 
   function startAnimation() { tsAnimPlaying = true; $('tsAnimPlay').textContent = 'Playing...'; }
