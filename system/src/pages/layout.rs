@@ -719,11 +719,13 @@ pub fn layout(title: &str, active: &str, base: &str, body: &str) -> String {
   }})();
 
   // ---- Loader Animation (every page load) ----
-  (function() {{
+  (function(){{
     var overlay = document.getElementById('loaderOverlay');
-    setTimeout(function() {{
+    var hideLoader = function(){{
       overlay.classList.add('loader-hidden');
-    }}, 2000);
+    }};
+    setTimeout(hideLoader, 2000);
+    window.addEventListener('load', hideLoader);
   }})();
 </script>
 </body>

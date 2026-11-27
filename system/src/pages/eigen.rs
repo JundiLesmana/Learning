@@ -2618,8 +2618,9 @@ var EigenViz = (function(){
     });
 
     // Drag on overlay
-    overlay.addEventListener('mousedown', onDragStart);
-    overlay.addEventListener('touchstart', onDragStart, { passive: false });
+    var ov = $('canvasOverlayC');
+    ov.addEventListener('mousedown', onDragStart);
+    ov.addEventListener('touchstart', onDragStart, { passive: false });
     window.addEventListener('mousemove', onDragMove);
     window.addEventListener('touchmove', onDragMove, { passive: false });
     window.addEventListener('mouseup', onDragEnd);
