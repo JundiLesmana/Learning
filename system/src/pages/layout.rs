@@ -307,6 +307,7 @@ pub fn layout(title: &str, active: &str, base: &str, body: &str) -> String {
 
     .loader-hidden {{
       opacity: 0;
+      visibility: hidden;
       pointer-events: none;
     }}
 
@@ -723,9 +724,11 @@ pub fn layout(title: &str, active: &str, base: &str, body: &str) -> String {
     var overlay = document.getElementById('loaderOverlay');
     var hideLoader = function(){{
       overlay.classList.add('loader-hidden');
+      setTimeout(function{{ overlay.style.display = 'none'; }}, 800);
     }};
     setTimeout(hideLoader, 2000);
     window.addEventListener('load', hideLoader);
+    document.addEventListener('DOMContentLoaded', hideLoader);
   }})();
 </script>
 </body>
